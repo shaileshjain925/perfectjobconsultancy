@@ -1,0 +1,2 @@
+# maitriprayas
+Jain Dictory

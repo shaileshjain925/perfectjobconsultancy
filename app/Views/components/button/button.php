@@ -1,0 +1,1 @@
+<input type="button" name="myButton" id="myButton" value="Click me" class="button-class" form="myForm" title="Click this button">

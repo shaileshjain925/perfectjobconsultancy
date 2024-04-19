@@ -1,0 +1,1 @@
+<a href="<?= @$form_cancle_button_url ?>"><button type="button" class="btn btn-outline-dark"><i class="fa fa-times"></i> <?= @$form_cancle_button_lable ?></button></a>
