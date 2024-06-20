@@ -1,1 +1,0 @@
-<button type="reset" class="btn btn-outline-dark"><i class="fa fa-refresh"></i> Reset</button>

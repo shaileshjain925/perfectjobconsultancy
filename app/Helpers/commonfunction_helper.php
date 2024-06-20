@@ -1,6 +1,26 @@
 <?php
 
 use CodeIgniter\Database\Config;
+use CodeIgniter\HTTP\Request;
+use CodeIgniter\HTTP\RequestInterface;
+
+enum MediaModuleType: string
+{
+  case Coupan = "Coupan";
+  case Customer = "Customer";
+  case User = "User";
+  case ProductBrand = "ProductBrand";
+  case ProductCategoryType = "ProductCategoryType";
+  case ProductCategory = "ProductCategory";
+  case Product = "Product";
+  case ProductVariant = "ProductVariant";
+  case Offer = "Offer";
+  case Gallery = "Gallery";
+  case Banner = "Banner";
+  case HomePageSliderBar = "HomePageSliderBar";
+  case CompanyLogo = "CompanyLogo";
+  case Sidebar = "Sidebar";
+}
 
 enum HttpRequest: string
 {
@@ -78,8 +98,6 @@ enum InputType: string
   case file = "file";
   case color = "color";
   case hidden = "hidden";
-
-
   case list = "list";
   case datalist = "datalist";
 }
@@ -261,12 +279,11 @@ if (!function_exists('getRequestInfo')) {
   //   }
   //   return ['requestMethod' => $getRequestMethod, 'requestDataFormat' => $getRequestDataFormat];
   // }
-  function getRequestInfo(object $request): array
+  function getRequestInfo(RequestInterface $request): array
   {
-    $getRequestMethod = '';
-    $getRequestMethod = ($request->getMethod() === 'get') ? 'GET' : (($request->getMethod() === 'post') ? 'POST' : (($request->getMethod() === 'put') ? 'PUT' : (($request->getMethod() === 'delete') ? 'DELETE' : (($request->isAJAX()) ? 'AJAX' : (($request->getMethod() === 'head') ? 'HEAD' : (($request->getMethod() === 'patch') ? 'PATCH' : (($request->getMethod() === 'options') ? 'OPTIONS' : 'OTHER')))))));
+    $RM = strtolower($request->getMethod());
+    $getRequestMethod = ($RM === 'get') ? 'GET' : (($RM === 'post') ? 'POST' : (($RM === 'put') ? 'PUT' : (($RM === 'delete') ? 'DELETE' : (($request->isAJAX()) ? 'AJAX' : (($RM === 'head') ? 'HEAD' : (($RM === 'patch') ? 'PATCH' : (($RM === 'options') ? 'OPTIONS' : 'OTHER')))))));
     $getRequestDataFormat = 'FORM';
-
     $contentType = $request->getHeaderLine('Content-Type');
 
     if ($contentType !== '') {
@@ -285,6 +302,28 @@ if (!function_exists('getRequestInfo')) {
     return ['requestMethod' => $getRequestMethod, 'requestDataFormat' => $getRequestDataFormat];
   }
 }
+if (!function_exists('getFiles')) {
+  function getFiles()
+  {
+    $files = [];
+    if (!empty($_FILES)) {
+      foreach ($_FILES as $key => $file) {
+        // Multi File
+        if (is_array($file['size'])) {
+          foreach ($file as $k => $v) {
+            for ($f = 0; $f < count($v); $f++) {
+              $files[$key][$f][$k] = $v[$f];
+            }
+          }
+        } else {
+          $files[$key] = $file;
+        }
+      }
+    }
+    return $files; // Return array containing information about each uploaded file
+  }
+}
+
 if (!function_exists('getRequestData')) {
   /**
    * Returns the request data in the specified format.
@@ -293,53 +332,108 @@ if (!function_exists('getRequestData')) {
    * @param string $returnDataFormat The format in which to return the data.
    * @return object|array|null The request data in the specified format.
    */
-  function getRequestData(object $request, string $returnDataFormat)
+  function getRequestData(object $request, string $returnDataFormat = 'ARRAY', &$RequestData = [])
   {
-    $requestInfo = getRequestInfo($request);
-    if ($requestInfo['requestDataFormat'] == 'JSON' && $returnDataFormat == 'ARRAY') {
-      if ($requestInfo['requestMethod'] == 'GET') {
-        $data = $request->getGet();
-      } else {
-        $data = $request->getPost();
+    $returnDataFormat = strtoupper($returnDataFormat);
+    $data = [];
+    $RequestData['ip_address'] = $request->getIPAddress();
+    $RequestData['user_agent'] = $request->getUserAgent();
+    $RequestData['method'] = $request->getMethod();
+    $RequestData['isAJAX'] = $request->isAJAX();
+    $RequestData['isCLI'] = $request->isCLI();
+    $RequestData['body'] = $request->getBody() ?? "";
+    $RequestData['Content-Type'] = trim($request->getHeaderLine('Content-Type'));
+    $RequestData['get'] = $request->getGet();
+    $RequestData['post'] = $request->getPost();
+    $RequestData['cookie'] = $request->getCookie();
+    $RequestData['server'] = $request->getServer();
+    $RequestData['env'] = $request->getEnv();
+    $RequestData['var'] = (function () use ($request) {
+      try {
+        return $request->getVar();
+      } catch (Exception $e) {
+        return [];
       }
-
-      if (empty($data)) {
-        try {
-          $jsonData = $request->getJSON(true);
-          // Process $jsonData further if needed
-          return $jsonData;
-        } catch (Exception $e) {
-          // Return a blank array if JSON parsing fails
-          return [];
-        }
-      } else {
-        return $data;
+    })();
+    $RequestData['raw'] = $request->getRawInput();
+    $RequestData['Uri'] = (string) $request->getUri();
+    $RequestData['UploadFilesObject'] = $request->getFiles();
+    $RequestData['UploadFilesArray'] = getFiles();
+    $RequestData['JsonObject'] = (function () use ($request) {
+      try {
+        return $request->getJSON();
+      } catch (Exception $e) {
+        return [];
       }
-    } elseif ($requestInfo['requestDataFormat'] == 'JSON' && $returnDataFormat == 'JSON') {
-      return $request->getJSON();
-    } elseif ($requestInfo['requestDataFormat'] == 'FORM' && $returnDataFormat == 'JSON') {
-      return json_decode(json_encode($request->getPost()));
-    } elseif ($requestInfo['requestDataFormat'] == 'FORM' && $returnDataFormat == 'ARRAY') {
-      if ($requestInfo['requestMethod'] == "GET") {
-        return $request->getGet();
-      }
-      return $request->getPost();
-    } elseif ($requestInfo['requestDataFormat'] == 'FORMDATA' && $returnDataFormat == 'ARRAY') {
-    $formData = $request->getVar();
-    if (!empty($_FILES)) {
-      $formData = array_merge($formData,$_FILES);
-    }
-    return $formData;
-    } elseif ($requestInfo['requestDataFormat'] == 'AJAX' && $returnDataFormat == 'ARRAY') {
-      return $request->getPost();
-    } elseif ($requestInfo['requestDataFormat'] == '' && $returnDataFormat == 'ARRAY') {
-      $data = $request->getPost();
-      if (empty($data)) {
+    })();
+    $RequestData['JsonArray'] = (function () use ($request) {
+      try {
         return $request->getJSON(true);
-      } else {
-        return $data;
+      } catch (Exception $e) {
+        return (object) [];
       }
+    })();
+
+    switch ($RequestData['method']) {
+      case 'GET':
+        if ($RequestData['Content-Type'] == "application/json") {
+          if ($returnDataFormat == 'ARRAY') {
+            return $RequestData['JsonArray'];
+          }
+          if ($returnDataFormat == 'OBJECT') {
+            return (object) $RequestData['JsonArray'];
+          }
+        } else {
+          if ($returnDataFormat == 'ARRAY') {
+            return [];
+          }
+          if ($returnDataFormat == 'OBJECT') {
+            return (object) $RequestData['JsonArray'];
+          }
+        }
+        break;
+      case 'POST':
+        if ($RequestData['Content-Type'] == "application/json" || $RequestData['Content-Type'] == "application/x-www-form-urlencoded") {
+          if ($returnDataFormat == 'ARRAY') {
+            return (empty($RequestData['post']))? $RequestData['JsonArray'] : $RequestData['post'];
+          }
+          if ($returnDataFormat == 'OBJECT') {
+            return (object) (empty($RequestData['post']))? $RequestData['JsonArray'] : $RequestData['post'];
+          }
+        }
+        if (substr_count($RequestData['Content-Type'], 'multipart')) {
+          if ($returnDataFormat == 'ARRAY') {
+            return array_merge(['_files'=>$RequestData['UploadFilesObject']],$RequestData['UploadFilesArray'], $RequestData['post']);
+          }
+          if ($returnDataFormat == 'OBJECT') {
+            return (object) array_merge(['_files'=>$RequestData['UploadFilesObject']],$RequestData['UploadFilesArray'], $RequestData['post']);
+          }
+        } else {
+          if ($returnDataFormat == 'ARRAY') {
+            return  $RequestData['post'];
+          }
+          if ($returnDataFormat == 'OBJECT') {
+            return (object) $RequestData['post'];
+          }
+        }
+        break;
+      case 'PUT':
+
+        break;
+      case 'PATCH':
+
+        break;
+      case 'DELETE':
+
+        break;
+
+
+      default:
+        # code...
+        break;
     }
+    // $data['request']['FORMDATA'] = $request->getGet();
+    return $data;
   }
 }
 
@@ -544,6 +638,7 @@ if (!function_exists('formatApiResponse')) {
     switch ($requestInfo['requestDataFormat']) {
       case '':
       case 'JSON':
+      case 'FORMDATA':
         return $responseObj->setJSON($response);
       case 'HTML':
         // Return HTML string directly

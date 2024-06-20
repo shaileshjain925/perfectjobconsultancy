@@ -18,7 +18,7 @@ class Email extends BaseConfig
     /**
      * The mail sending protocol: mail, sendmail, smtp
      */
-    public string $protocol = 'smtp';
+    public string $protocol = 'mail';
 
     /**
      * The server path to Sendmail.
@@ -43,7 +43,7 @@ class Email extends BaseConfig
     /**
      * SMTP Port
      */
-    public int $SMTPPort = 587;
+    public int $SMTPPort = 25;
 
     /**
      * SMTP Timeout (in seconds)
@@ -77,7 +77,7 @@ class Email extends BaseConfig
     /**
      * Type of mail, either 'text' or 'html'
      */
-    public string $mailType = 'html';
+    public string $mailType = 'text';
 
     /**
      * Character set (utf-8, iso-8859-1, etc.)
@@ -118,23 +118,4 @@ class Email extends BaseConfig
      * Enable notify message from server
      */
     public bool $DSN = false;
-
-    public function __construct()
-    {
-        // Load the .env file if it exists
-        if (file_exists(ROOTPATH . '.env')) {
-            // Initialize values from environment variables or use default values if not found
-            $this->SMTPHost     = $_ENV['SMTP_HOST'] ?? '';
-            $this->SMTPUser     = $_ENV['SMTP_USER'] ?? '';
-            $this->SMTPPass     = $_ENV['SMTP_PASS'] ?? '';
-            $this->SMTPPort     = $_ENV['SMTP_PORT'] ?? 587; // Default to port 587 if not specified
-            $this->SMTPTimeout  = $_ENV['SMTP_TIMEOUT'] ?? 30; // Default to 10 seconds if not specified
-            $this->SMTPKeepAlive = $_ENV['SMTP_KEEP_ALIVE'] === 'true'; // Convert string to boolean
-            $this->SMTPCrypto   = $_ENV['SMTP_CRYPTO'] ?? 'ssl';
-            $this->fromEmail = $_ENV['EMAIL_FROM_EMAIL'] ?? '';
-            $this->fromName = $_ENV['EMAIL_FROM_NAME'] ?? '';
-        }
-        // You can similarly initialize other properties from environment variables
-        // Remember to define these variables in your .env file
-    }
 }

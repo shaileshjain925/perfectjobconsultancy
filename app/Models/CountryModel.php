@@ -6,15 +6,19 @@ use App\Models\FunctionModel;
 
 class CountryModel extends FunctionModel
 {
-    protected $DBGroup          = 'default';
-    protected $table = 'mst_countries';
-    protected $primaryKey       = 'id';
+    protected $table            = 'country';
+    protected $primaryKey       = 'country_id';
     protected $useAutoIncrement = true;
-    // protected $returnType       = \App\Entities\CountryEntity::class;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ["id", "name", "alias", "short_name", "phonecode", "currency", "currency_name", "currency_symbol", "region"];
+    protected $allowedFields    = ['country_id','country_name', 'alias', 'short_name', 'phonecode', 'currency', 'currency_name', 'currency_symbol', 'region', 'created_at', 'updated_at'];
+
+    protected bool $allowEmptyInserts = false;
+    protected bool $updateOnlyChanged = true;
+
+    protected array $casts = [];
+    protected array $castHandlers = [];
 
     // Dates
     protected $useTimestamps = false;
@@ -23,11 +27,16 @@ class CountryModel extends FunctionModel
     protected $updatedField  = 'updated_at';
     protected $deletedField  = 'deleted_at';
 
-
     // Validation
     protected $validationRules = [
-        'id' => 'permit_empty',
-        'name' => 'required'
+        'country_name' => 'required|max_length[100]',
+        'alias' => 'max_length[3]',
+        'short_name' => 'max_length[2]',
+        'phonecode' => 'max_length[255]',
+        'currency' => 'max_length[255]',
+        'currency_name' => 'max_length[255]',
+        'currency_symbol' => 'max_length[255]',
+        'region' => 'max_length[255]',
     ];
     protected $validationMessages   = [];
     protected $skipValidation       = false;

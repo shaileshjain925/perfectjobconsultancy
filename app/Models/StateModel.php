@@ -6,15 +6,19 @@ use App\Models\FunctionModel;
 
 class StateModel extends FunctionModel
 {
-    protected $DBGroup          = 'default';
-    protected $table = 'mst_states';
-    protected $primaryKey       = 'id';
+    protected $table            = 'state';
+    protected $primaryKey       = 'state_id';
     protected $useAutoIncrement = true;
-    // protected $returnType       = \App\Entities\StateEntity::class;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ["id", "name", "state_code", "country_id", "short_name"];
+    protected $allowedFields    = ['state_id','state_name', 'state_code', 'country_id', 'short_name', 'created_at', 'updated_at'];
+
+    protected bool $allowEmptyInserts = false;
+    protected bool $updateOnlyChanged = true;
+
+    protected array $casts = [];
+    protected array $castHandlers = [];
 
     // Dates
     protected $useTimestamps = false;
@@ -25,14 +29,15 @@ class StateModel extends FunctionModel
 
     // Validation
     protected $validationRules = [
-        'id' => 'permit_empty',
-        'name' => 'required',
-        'country_id' => 'required|integer|is_not_unique[mst_countries.id]'
+        'state_id' => 'permit_empty',
+        'state_name' => 'required|max_length[255]',
+        'state_code' => 'max_length[3]',
+        'country_id' => 'required|is_not_unique[country.country_id]',
+        'short_name' => 'max_length[255]',
     ];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
-
     // Callbacks
     protected $allowCallbacks = true;
     protected $beforeInsert   = [];
@@ -43,4 +48,9 @@ class StateModel extends FunctionModel
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+    public function __construct()
+    {
+        parent::__construct();
+        $this->addParentJoin('country_id',$this->getCountryModel(),'left',['country_name','phonecode as "country code"']);
+    }
 }

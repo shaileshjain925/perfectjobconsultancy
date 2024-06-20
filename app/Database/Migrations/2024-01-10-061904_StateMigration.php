@@ -9,12 +9,13 @@ class StateMigration extends Migration
     public function up()
     {
         $this->forge->addField([
-            'id' => [
-                'type' => 'MEDIUMINT',
+            'state_id' => [
+                'type' => 'INT',
+                'constraint' => 11,
                 'unsigned' => true,
                 'auto_increment' => true,
             ],
-            'name' => [
+            'state_name' => [
                 'type' => 'VARCHAR',
                 'constraint' => 255,
             ],
@@ -25,7 +26,8 @@ class StateMigration extends Migration
                 'comment' => 'gst state code',
             ],
             'country_id' => [
-                'type' => 'MEDIUMINT',
+                'type' => 'INT',
+                'constraint' => 11,
                 'unsigned' => true,
             ],
             'short_name' => [
@@ -37,13 +39,13 @@ class StateMigration extends Migration
             'updated_at datetime default current_timestamp on update current_timestamp',
         ]);
 
-        $this->forge->addKey('id', true);
-        $this->forge->addForeignKey('country_id', 'mst_countries', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->createTable('mst_states', true);
+        $this->forge->addKey('state_id', true);
+        $this->forge->addForeignKey('country_id', 'country', 'country_id', 'CASCADE', 'CASCADE');
+        $this->forge->createTable('state', true);
     }
 
     public function down()
     {
-        $this->forge->dropTable('mst_states', true);
+        $this->forge->dropTable('state', true);
     }
 }

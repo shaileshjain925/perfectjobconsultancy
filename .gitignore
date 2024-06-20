@@ -1,7 +1,3 @@
-*.log
-log-*
-debugbar_*
-ci_session*
 #-------------------------
 # Operating Specific Junk Files
 #-------------------------
@@ -45,14 +41,28 @@ $RECYCLE.BIN/
 #-------------------------
 # These should never be under version control,
 # as it poses a security risk.
+.env
 .vagrant
 Vagrantfile
 
 #-------------------------
 # Temporary Files
 #-------------------------
+writable/cache/*
+!writable/cache/index.html
 
+writable/logs/*
+!writable/logs/index.html
 
+writable/session/*
+!writable/session/index.html
+
+writable/uploads/*
+!writable/uploads/index.html
+
+writable/debugbar/*
+
+php_errors.log
 
 #-------------------------
 # User Guide Temp Files
@@ -73,6 +83,7 @@ phpunit
 #-------------------------
 # Composer
 #-------------------------
+vendor/
 
 #-------------------------
 # IDE / Development Files
@@ -109,11 +120,8 @@ nb-configuration.xml
 
 # Visual Studio Code
 .vscode/
-*.code-workspace
 
 /results/
 /phpunit*.xml
 /.phpunit.*.cache
-vendor/
-*.env
-.env
+

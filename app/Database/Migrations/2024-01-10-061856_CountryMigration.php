@@ -9,12 +9,13 @@ class CountryMigration extends Migration
     public function up()
     {
         $this->forge->addField([
-            'id' => [
-                'type' => 'MEDIUMINT',
+            'country_id' => [
+                'type' => 'INT',
+                'constraint' => 11,
                 'unsigned' => true,
                 'auto_increment' => true,
             ],
-            'name' => [
+            'country_name' => [
                 'type' => 'VARCHAR',
                 'constraint' => 100,
             ],
@@ -57,12 +58,12 @@ class CountryMigration extends Migration
             'updated_at datetime default current_timestamp on update current_timestamp',
         ]);
 
-        $this->forge->addKey('id', true);
-        $this->forge->createTable('mst_countries', true);
+        $this->forge->addKey('country_id', true);
+        $this->forge->createTable('country', true);
     }
 
     public function down()
     {
-        $this->forge->dropTable('mst_countries', true);
+        $this->forge->dropTable('country', true);
     }
 }

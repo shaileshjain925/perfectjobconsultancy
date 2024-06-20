@@ -1,1 +1,0 @@
-<input type="hidden" id="<?= @$input_id ?>" name="<?= @$input_name ?>" value="<?= @$input_value ?>" class="<?= @$input_classes ?>" form="<?= @$input_form ?>" title="<?= @$input_title ?>"  placeholder="<?= @$input_placeHolder ?>" <?= @$input_attributes ?>>

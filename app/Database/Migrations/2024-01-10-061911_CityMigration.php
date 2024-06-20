@@ -9,35 +9,38 @@ class CityMigration extends Migration
     public function up()
     {
         $this->forge->addField([
-            'id' => [
-                'type' => 'MEDIUMINT',
+            'city_id' => [
+                'type' => 'INT',
                 'unsigned' => true,
+                'constraint' => 11,
                 'auto_increment' => true,
             ],
-            'name' => [
+            'city_name' => [
                 'type' => 'VARCHAR',
                 'constraint' => 255,
             ],
-            'state_id' => [
-                'type' => 'MEDIUMINT',
+            'country_id' => [
+                'type' => 'INT',
+                'constraint' => 11,
                 'unsigned' => true,
             ],
-            'country_id' => [
-                'type' => 'MEDIUMINT',
+            'state_id' => [
+                'type' => 'INT',
+                'constraint' => 11,
                 'unsigned' => true,
             ],
             'created_at datetime default current_timestamp',
             'updated_at datetime default current_timestamp on update current_timestamp',
         ]);
 
-        $this->forge->addKey('id', true);
-        $this->forge->addForeignKey('state_id', 'mst_states', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->addForeignKey('country_id', 'mst_countries', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->createTable('mst_cities', true);
+        $this->forge->addKey('city_id', true);
+        $this->forge->addForeignKey('country_id', 'country', 'country_id', 'RESTRICT', 'RESTRICT');
+        $this->forge->addForeignKey('state_id', 'state', 'state_id', 'RESTRICT', 'RESTRICT');
+        $this->forge->createTable('city', true);
     }
 
     public function down()
     {
-        $this->forge->dropTable('mst_cities', true);
+        $this->forge->dropTable('city', true);
     }
 }

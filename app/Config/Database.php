@@ -10,32 +10,32 @@ use CodeIgniter\Database\Config;
 class Database extends Config
 {
     /**
-     * The directory that holds the Migrations
-     * and Seeds directories.
+     * The directory that holds the Migrations and Seeds directories.
      */
     public string $filesPath = APPPATH . 'Database' . DIRECTORY_SEPARATOR;
 
     /**
-     * Lets you choose which connection group to
-     * use if no other is specified.
+     * Lets you choose which connection group to use if no other is specified.
      */
     public string $defaultGroup = 'default';
 
     /**
      * The default database connection.
+     *
+     * @var array<string, mixed>
      */
     public array $default = [
         'DSN'          => '',
         'hostname'     => 'localhost',
-        'username'     => 'root',
+        'username'     => '',
         'password'     => '',
-        'database'     => 'yecoabmy_wb_essential_db',
+        'database'     => '',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,
         'DBDebug'      => true,
-        'charset'      => 'utf8',
-        'DBCollat'     => 'utf8_general_ci',
+        'charset'      => 'utf8mb4',
+        'DBCollat'     => 'utf8mb4_general_ci',
         'swapPre'      => '',
         'encrypt'      => false,
         'compress'     => false,
@@ -43,31 +43,122 @@ class Database extends Config
         'failover'     => [],
         'port'         => 3306,
         'numberNative' => false,
+        'dateFormat'   => [
+            'date'     => 'Y-m-d',
+            'datetime' => 'Y-m-d H:i:s',
+            'time'     => 'H:i:s',
+        ],
     ];
-    
-    public array $custom_group = [
-        'DSN'          => '',
-        'hostname'     => 'localhost',
-        'username'     => 'root',
-        'password'     => '',
-        'database'     => 'yecoabmy_wb_essential_db',
-        'DBDriver'     => 'MySQLi',
-        'DBPrefix'     => '',
-        'pConnect'     => false,
-        'DBDebug'      => true,
-        'charset'      => 'utf8',
-        'DBCollat'     => 'utf8_general_ci',
-        'swapPre'      => '',
-        'encrypt'      => false,
-        'compress'     => false,
-        'strictOn'     => false,
-        'failover'     => [],
-        'port'         => 3306,
-        'numberNative' => false,
-    ];
+
+    //    /**
+    //     * Sample database connection for SQLite3.
+    //     *
+    //     * @var array<string, mixed>
+    //     */
+    //    public array $default = [
+    //        'database'    => 'database.db',
+    //        'DBDriver'    => 'SQLite3',
+    //        'DBPrefix'    => '',
+    //        'DBDebug'     => true,
+    //        'swapPre'     => '',
+    //        'failover'    => [],
+    //        'foreignKeys' => true,
+    //        'busyTimeout' => 1000,
+    //        'dateFormat'  => [
+    //            'date'     => 'Y-m-d',
+    //            'datetime' => 'Y-m-d H:i:s',
+    //            'time'     => 'H:i:s',
+    //        ],
+    //    ];
+
+    //    /**
+    //     * Sample database connection for Postgre.
+    //     *
+    //     * @var array<string, mixed>
+    //     */
+    //    public array $default = [
+    //        'DSN'        => '',
+    //        'hostname'   => 'localhost',
+    //        'username'   => 'root',
+    //        'password'   => 'root',
+    //        'database'   => 'ci4',
+    //        'schema'     => 'public',
+    //        'DBDriver'   => 'Postgre',
+    //        'DBPrefix'   => '',
+    //        'pConnect'   => false,
+    //        'DBDebug'    => true,
+    //        'charset'    => 'utf8',
+    //        'swapPre'    => '',
+    //        'failover'   => [],
+    //        'port'       => 5432,
+    //        'dateFormat' => [
+    //            'date'     => 'Y-m-d',
+    //            'datetime' => 'Y-m-d H:i:s',
+    //            'time'     => 'H:i:s',
+    //        ],
+    //    ];
+
+    //    /**
+    //     * Sample database connection for SQLSRV.
+    //     *
+    //     * @var array<string, mixed>
+    //     */
+    //    public array $default = [
+    //        'DSN'        => '',
+    //        'hostname'   => 'localhost',
+    //        'username'   => 'root',
+    //        'password'   => 'root',
+    //        'database'   => 'ci4',
+    //        'schema'     => 'dbo',
+    //        'DBDriver'   => 'SQLSRV',
+    //        'DBPrefix'   => '',
+    //        'pConnect'   => false,
+    //        'DBDebug'    => true,
+    //        'charset'    => 'utf8',
+    //        'swapPre'    => '',
+    //        'encrypt'    => false,
+    //        'failover'   => [],
+    //        'port'       => 1433,
+    //        'dateFormat' => [
+    //            'date'     => 'Y-m-d',
+    //            'datetime' => 'Y-m-d H:i:s',
+    //            'time'     => 'H:i:s',
+    //        ],
+    //    ];
+
+    //    /**
+    //     * Sample database connection for OCI8.
+    //     *
+    //     * You may need the following environment variables:
+    //     *   NLS_LANG                = 'AMERICAN_AMERICA.UTF8'
+    //     *   NLS_DATE_FORMAT         = 'YYYY-MM-DD HH24:MI:SS'
+    //     *   NLS_TIMESTAMP_FORMAT    = 'YYYY-MM-DD HH24:MI:SS'
+    //     *   NLS_TIMESTAMP_TZ_FORMAT = 'YYYY-MM-DD HH24:MI:SS'
+    //     *
+    //     * @var array<string, mixed>
+    //     */
+    //    public array $default = [
+    //        'DSN'        => 'localhost:1521/XEPDB1',
+    //        'username'   => 'root',
+    //        'password'   => 'root',
+    //        'DBDriver'   => 'OCI8',
+    //        'DBPrefix'   => '',
+    //        'pConnect'   => false,
+    //        'DBDebug'    => true,
+    //        'charset'    => 'AL32UTF8',
+    //        'swapPre'    => '',
+    //        'failover'   => [],
+    //        'dateFormat' => [
+    //            'date'     => 'Y-m-d',
+    //            'datetime' => 'Y-m-d H:i:s',
+    //            'time'     => 'H:i:s',
+    //        ],
+    //    ];
+
     /**
-     * This database connection is used when
-     * running PHPUnit database tests.
+     * This database connection is used when running PHPUnit database tests.
+     *
+     * @var array<string, mixed>
      */
     public array $tests = [
         'DSN'         => '',
@@ -80,7 +171,7 @@ class Database extends Config
         'pConnect'    => false,
         'DBDebug'     => true,
         'charset'     => 'utf8',
-        'DBCollat'    => 'utf8_general_ci',
+        'DBCollat'    => '',
         'swapPre'     => '',
         'encrypt'     => false,
         'compress'    => false,
@@ -89,37 +180,17 @@ class Database extends Config
         'port'        => 3306,
         'foreignKeys' => true,
         'busyTimeout' => 1000,
+        'dateFormat'  => [
+            'date'     => 'Y-m-d',
+            'datetime' => 'Y-m-d H:i:s',
+            'time'     => 'H:i:s',
+        ],
     ];
 
     public function __construct()
     {
-        $this->custom_group["hostname"] = $_ENV['database.default.hostname'];
-        $this->custom_group["username"] = $_ENV['database.default.username'];
-        $this->custom_group["password"] = $_ENV['database.default.password'];
-        $this->custom_group["database"] = $_ENV['database.default.database'];
-        $this->custom_group["port"] = $_ENV['database.default.port'];
+        parent::__construct();
 
-        $this->default["hostname"] = $_ENV['database.default.hostname'];
-        $this->default["username"] = $_ENV['database.default.username'];
-        $this->default["password"] = $_ENV['database.default.password'];
-        $this->default["database"] = $_ENV['database.default.database'];
-        $this->default["port"] = $_ENV['database.default.port'];
-
-        // Call getCustomDatabaseConnection function and assign its result to custom_group
-        $request = service('request');
-
-        // Check if the 'Authorization-2' header exists and is not empty
-        if ($request->hasHeader('Authorization-2')) {
-            $authorization2Header = $request->getHeaderLine('Authorization-2');
-
-            // Handle the authorization header as needed
-            // For example, check if it has a valid value and proceed accordingly
-            if (!empty($authorization2Header)) {
-                // The Authorization-2 header exists and is not empty
-                // Proceed with your logic here
-                $this->custom_group = getCustomDatabaseConnection($authorization2Header);
-            }
-        }
         // Ensure that we always set the database group to 'tests' if
         // we are currently running an automated test suite, so that
         // we don't overwrite live data on accident.

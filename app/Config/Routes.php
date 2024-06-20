@@ -14,6 +14,10 @@ helper('array');
  * @param RouteCollection $routes The route collection instance.
  * @return void
  */
+/**
+ * @var RouteCollection $routes
+ */
+
 if (!function_exists('autoAddRoutes')) {
     function autoAddRoutes(string $directory, RouteCollection $routes): void
     {
@@ -52,235 +56,262 @@ function encodeArray($array)
     $serializedArray = serialize($array);
     return urlencode($serializedArray);
 }
-/**
- * Get Route Creation For PageController and Api To Get Single Record.
- */
-function getRoute($routes, $path, $controller, $alias = null, $filterArguments = [], $menuFilter = '')
-{
-    if(!empty($menuFilter)){
-        $options = ['filter' => $menuFilter . ':' . urlencode(serialize($filterArguments))];
-    }else{
-        $options =[];
-    }
-    
-
-    if ($alias !== null) {
-        $options['as'] = $alias;
-    }
-
-    $routes->get($path, $controller, $options);
-}
-/**
- * Post Route Creation For Api To Get List Of Record.
- */
-function postRoute($routes, $path, $controller, $alias = null, $filterArguments = [], $menuFilter = '')
-{
-    if(!empty($menuFilter)){
-        $options = ['filter' => $menuFilter . ':' . urlencode(serialize($filterArguments))];
-    }else{
-        $options =[];
-    }
-
-    if ($alias !== null) {
-        $options['as'] = $alias;
-    }
-
-    $routes->post($path, $controller, $options);
-}
-
 if (!in_array($file_extension, $extensions)) {
-    $routes->options('(:any)', 'ApiController::handleOptionsRequest');
-    $routes->get('/', '\App\Controllers\Auth\LoginController::loginView', ['as' => 'login']);
-    $routes->group('PJC', function ($routes) {
-        $routes->group('NoAuth', function ($routes) {
-            $routes->get('login', '\App\Controllers\Auth\LoginController::loginView', ['as' => 'login']);
-            $routes->post('login', '\App\Controllers\Auth\LoginController::loginAction', ['as' => 'loginPost']);
-
-            // Magic Link Login
-            $routes->get('magic-link', '\App\Controllers\Auth\MagicLinkController::loginView', ['as' => 'magic-link']);
-            $routes->post('magic-link', '\App\Controllers\Auth\MagicLinkController::loginAction', ['as' => 'magic-linkPost']);
-            $routes->get('verify-magic-link', '\App\Controllers\Auth\MagicLinkController::verify', ['as' => 'verify-magic-link']);
-
-            // Logout Routes
-            $routes->get('logout', '\App\Controllers\Auth\LoginController::logoutAction', ['as' => 'logout']);
-
-            // Registration Routes
-            $routes->get('register', '\App\Controllers\Auth\RegisterController::registerView', ['as' => 'register']);
-            $routes->post('register', '\App\Controllers\Auth\RegisterController::registerAction', ['as' => 'registerPost']);
-
-            // Action Routes
-            $routes->get('auth-action-show', '\App\Controllers\Auth\ActionController::show', ['filter' => 'auth-action-show']);
-            $routes->post('auth-action-handle', '\App\Controllers\Auth\ActionController::handle', ['as' => 'auth-action-handlePost']);
-            $routes->post('auth-action-verify', '\App\Controllers\Auth\ActionController::verify', ['as' => 'auth-action-verifyPost']);
+    $routes->options('(:any)', 'AdminApiController::handleOptionsRequest');
+    // Main Routes Start ---------------------------------------------------------------------------------------------------------------------
+    $routes->get('/', 'AuthController::login');
+    $routes->group('Auth', ['filter' => 'AdminAuth'], function ($routes) {
+        $routes->group('Dashboard', function ($routes) {
+            $routes->get('/', 'AdminPageController::default_dashboard', ['as' => 'default_dashboard']);
+            $routes->get('Admin', 'AdminPageController::admin_dashboard', ['as' => 'admin_dashboard']);
+            $routes->get('Inventory', 'AdminPageController::admin_dashboard', ['as' => 'inventory_dashboard']);
+            $routes->get('Order', 'AdminPageController::admin_dashboard', ['as' => 'order_dashboard']);
+            $routes->get('Financial', 'AdminPageController::admin_dashboard', ['as' => 'financial_dashboard']);
+            $routes->get('Delivery', 'AdminPageController::admin_dashboard', ['as' => 'delivery_dashboard']);
+            $routes->get('Stock', 'AdminPageController::admin_dashboard', ['as' => 'stock_dashboard']);
         });
-        // Admin Panel Without Midware Pages End
-
-        // Admin Panel Without Midware Pages Start
-        $routes->group('Auth', ['filter' => 'InnerApiFilter'], function ($routes) {
-            $routes->get('/', 'PageController::dashboard', ['as' => 'dashboard']);
-            // Website Management
-            $routes->group('WebsiteManagement', function ($routes) {
-                $routes->group('CompanySetup', function ($routes) {
-                    getRoute($routes, "Update", "PageController::CompanySetupCreateUpdate", 'CompanySetupCreateUpdate');
-                });
-                $routes->group('Enquiry', function ($routes) {
-                    getRoute($routes, "List", "PageController::FormSubmissionList", 'FormSubmissionList');
-                });
-                $routes->group('BlogPost', function ($routes) {
-                    getRoute($routes, "List", "PageController::BlogPostList", 'BlogPostList');
-                    getRoute($routes, "Create", "PageController::BlogPostList", 'BlogPostCreate');
-                    getRoute($routes, "Update/(:num)", "PageController::BlogPostList/$1", 'BlogPostUpdate');
-                });
+        $routes->group('Admin', function ($routes) {
+            $routes->get('RoleUserList', 'AdminPageController::admin_dashboard', ['as' => 'role_user_list']);
+            $routes->group('CompanySetup', function ($routes) {
+                $routes->get('WebSiteSetup', 'AdminPageController::admin_dashboard', ['as' => 'website_setup']);
+                $routes->get('EcommerceSetup', 'AdminPageController::admin_dashboard', ['as' => 'ecommerce_setup']);
+            });
+            $routes->group('Integration', function ($routes) {
+                $routes->get('Email', 'AdminPageController::admin_dashboard', ['as' => 'email_integration']);
+                $routes->get('SMS', 'AdminPageController::admin_dashboard', ['as' => 'sms_integration']);
+                $routes->get('Notification', 'AdminPageController::admin_dashboard', ['as' => 'notification_integration']);
+                $routes->get('PaymentGateWay', 'AdminPageController::admin_dashboard', ['as' => 'payment_gateway_integration']);
+                $routes->get('OAuth2', 'AdminPageController::admin_dashboard', ['as' => 'oauth2_integration']);
             });
         });
-        // Admin Panel Pages With Midware End
     });
-    // Admin Panel Pages End        
-
     // Admin Panel Api Start
-    $routes->group('BSS-Api', function ($routes) {
+    $routes->group('adminApi', function ($routes) {
+        $routes->group('user', function ($routes) {
+            $routes->post('login', 'AdminApiController::UserLogin', ['as' => 'userLoginApi']);
+            $routes->post('forgetPassword', 'AdminApiController::UserForgetPassword', ['as' => 'userForgetPasswordApi']);
+            $routes->post('forgetPasswordVerification', 'AdminApiController::UserForgetPasswordVerification', ['as' => 'userForgetPasswordVerificationApi']);
+        });
         // Admin Panel Api Without Midware Start
-        $routes->group('NoAuth', function ($routes) {
-            $routes->post("GetCountry", "ApiController::getCountry");
-            $routes->post("GetState", "ApiController::getState");
-            $routes->post("GetCity", "ApiController::getCity");
-            $routes->post("CityCreate", "ApiController::Citycreate");
-            $routes->post('Register', 'ApiController::AuthRegistration');
-            $routes->post('Login', '\App\Controllers\Auth\LoginController::jwtLogin');
+        $routes->group('Country', function ($routes) {
+            $routes->post('Get', 'AdminApiController::CountryGet');
+            $routes->post('List', 'AdminApiController::CountryList');
+            $routes->post('Create', 'AdminApiController::CountryCreate');
+            $routes->post('Update', 'AdminApiController::CountryUpdate');
+            $routes->post('Delete', 'AdminApiController::CountryDelete');
         });
-        // Admin Panel Api Without Midware End
-
-        // Admin Panel Api With Midware Start
-        $routes->group('Auth', ['filter' => 'InnerApiFilter'], function ($routes) {
-            $routes->group('Role', function ($routes) {
-                postRoute($routes, 'Create', 'ApiController::RoleCreate', 'rolecreate-api');
-                postRoute($routes, 'RoleMenuRightsCreate', 'ApiController::RoleMenuAccessRightsCreate', 'rolemenuapirightscreate-api');
-                postRoute($routes, 'List', 'ApiController::RoleList', 'rolelist-api');
-                getRoute($routes, 'Get/(:num)', 'ApiController::RoleGet/$1', null);
-                postRoute($routes, 'Update', 'ApiController::RoleUpdate', 'roleupdate-api');
-                postRoute($routes, 'Delete', 'ApiController::RoleDelete', 'roledelete-api');
-            });
-            $routes->group('Company', function ($routes) {
-                postRoute($routes, 'Create', 'ApiController::CompanyCreate', 'companycreate-api');
-                postRoute($routes, 'List', 'ApiController::CompanyList', 'companylist-api');
-                postRoute($routes, 'Migrate', 'ApiController::CompanyMigrate', 'companymigrate-api');
-                getRoute($routes, 'Get/(:num)', 'ApiController::CompanyGet/$1', null);
-                postRoute($routes, 'Update', 'ApiController::CompanyUpdate', 'companyupdate-api');
-                postRoute($routes, 'Delete', 'ApiController::CompanyDelete', 'companydelete-api');
-                $routes->group('User', function ($routes) {
-                    postRoute($routes, 'Create', 'ApiController::CompanyUserCreate', 'companyusercreate-api');
-                    postRoute($routes, 'List', 'ApiController::CompanyUserList', 'companyuserlist-api');
-                    getRoute($routes, 'Get/(:num)', 'ApiController::CompanyUserGet/$1', null);
-                    postRoute($routes, 'Update', 'ApiController::CompanyUserUpdate', 'companyuserupdate-api');
-                    postRoute($routes, 'Delete', 'ApiController::CompanyUserDelete', 'companyuserdelete-api');
-                });
-            });
+        $routes->group('State', function ($routes) {
+            $routes->post('Get', 'AdminApiController::StateGet');
+            $routes->post('List', 'AdminApiController::StateList');
+            $routes->post('Create', 'AdminApiController::StateCreate');
+            $routes->post('Update', 'AdminApiController::StateUpdate');
+            $routes->post('Delete', 'AdminApiController::StateDelete');
         });
-        // Admin Panel Api With Midware End
-    });
-    // Admin Panel Api End
-    // Website Management Mobile App Api Start
-    $routes->group('BSS-ClientApp-Api', function ($routes) {
-        // Website Management Mobile App Api Without Midware Start
-        $routes->group('NoAuth', function ($routes) {
-            $routes->post("WebsiteManagementLogin", "ApiWebsiteManagementController::WebsiteManagementLogin");
-            $routes->get("CorsTestGet", "ApiController::CrosTest");
-            $routes->post("CrosTestPost", "ApiController::CrosTest");
-            $routes->post("CrosTestPut", "ApiController::CrosTest");
-            $routes->post("CrosTestPatch", "ApiController::CrosTest");
-            $routes->post("CrosTestDelete", "ApiController::CrosTest");
+        $routes->group('City', function ($routes) {
+            $routes->post('Get', 'AdminApiController::CityGet');
+            $routes->post('List', 'AdminApiController::CityList');
+            $routes->post('Create', 'AdminApiController::CityCreate');
+            $routes->post('Update', 'AdminApiController::CityUpdate');
+            $routes->post('Delete', 'AdminApiController::CityDelete');
         });
-        // Website Management Mobile App Api Without Midware End
-        // Website Management Mobile App Api With Midware Start
-        $routes->group('Auth', function ($routes) {
-            postRoute($routes, 'DashboardGet', 'ApiWebsiteManagementController::DashboardGet', null,[],'clientapp');
-            postRoute($routes, 'UploadFile', 'ApiWebsiteManagementController::UploadFile', null,[],'clientapp');
-            $routes->group('WebsiteProfile', function ($routes) {
-                $menu_id = 1;
-                postRoute($routes, 'List', 'ApiWebsiteManagementController::WebsiteProfileGet', null, ['menu_id' => $menu_id, 'action_type' => MAT::View], 'clientapp');
-                postRoute($routes, 'Update', 'ApiWebsiteManagementController::WebsiteProfileCreateUpdate', null, ['menu_id' => $menu_id, 'action_type' => MAT::Create], 'clientapp');
+        $routes->group('Auth', ['filter' => 'AdminApiAuth'], function ($routes) {
+            $routes->group('User', function ($routes) {
+                $routes->post('Get', 'AdminApiController::UserGet');
+                $routes->post('List', 'AdminApiController::UserList');
+                $routes->post('Create', 'AdminApiController::UserCreate');
+                $routes->post('Update', 'AdminApiController::UserUpdate');
+                $routes->post('Delete', 'AdminApiController::UserDelete');
             });
-            $routes->group('FormSubmissions', function ($routes) {
-                $menu_id = 2;
-                postRoute($routes, 'List', 'ApiWebsiteManagementController::FormSubmissionsList', null, ['menu_id' => $menu_id, 'action_type' => MAT::View], 'clientapp');
-            });
-            $routes->group('BlogPost', function ($routes) {
-                $menu_id = 3;
-                getRoute($routes, 'Get/(:num)', 'ApiWebsiteManagementController::BlogPostGet/$1', null, ['menu_id' => $menu_id, 'action_type' => MAT::View], 'clientapp');
-                postRoute($routes, 'List', 'ApiWebsiteManagementController::BlogPostList', null, ['menu_id' => $menu_id, 'action_type' => MAT::View], 'clientapp');
-                postRoute($routes, 'Create', 'ApiWebsiteManagementController::BlogPostCreate', null, ['menu_id' => $menu_id, 'action_type' => MAT::Create], 'clientapp');
-                postRoute($routes, 'Update', 'ApiWebsiteManagementController::BlogPostUpdate', null, ['menu_id' => $menu_id, 'action_type' => MAT::Update], 'clientapp');
-                postRoute($routes, 'Delete', 'ApiWebsiteManagementController::BlogPostDelete', null, ['menu_id' => $menu_id, 'action_type' => MAT::Delete], 'clientapp');
-                getRoute($routes, 'SendBlogEmailToAllSubscribers/(:num)', 'ApiWebsiteManagementController::SendBlogEmailToAllSubscribers/$1', null, ['menu_id' => $menu_id, 'action_type' => MAT::Export], 'clientapp');
-            });
-            $routes->group('Client', function ($routes) {
-                $menu_id = 3;
-                getRoute($routes, 'Get/(:num)', 'ApiWebsiteManagementController::ClientGet/$1', null, ['menu_id' => $menu_id, 'action_type' => MAT::View], 'clientapp');
-                postRoute($routes, 'List', 'ApiWebsiteManagementController::ClientList', null, ['menu_id' => $menu_id, 'action_type' => MAT::View], 'clientapp');
-                postRoute($routes, 'Create', 'ApiWebsiteManagementController::ClientCreate', null, ['menu_id' => $menu_id, 'action_type' => MAT::Create], 'clientapp');
-                postRoute($routes, 'Update', 'ApiWebsiteManagementController::ClientUpdate', null, ['menu_id' => $menu_id, 'action_type' => MAT::Update], 'clientapp');
-                postRoute($routes, 'Delete', 'ApiWebsiteManagementController::ClientDelete', null, ['menu_id' => $menu_id, 'action_type' => MAT::Delete], 'clientapp');
-                getRoute($routes, 'SendBlogEmailToAllSubscribers/(:num)', 'ApiWebsiteManagementController::SendBlogEmailToAllSubscribers/$1', null, ['menu_id' => $menu_id, 'action_type' => MAT::Export], 'clientapp');
-            });
-            $routes->group('VisitorCount', function ($routes) {
-                $menu_id = 4;
-                postRoute($routes, 'Get', 'ApiWebsiteManagementController::VisitorsCountGet', null, ['menu_id' => $menu_id, 'action_type' => MAT::View], 'clientapp');
-            });
-            $routes->group('Subscriber', function ($routes) {
-                $menu_id = 5;
-                postRoute($routes, 'List', 'ApiWebsiteManagementController::SubscriberList', null, ['menu_id' => $menu_id, 'action_type' => MAT::View], 'clientapp');
-            });
-            $routes->group('Employees', function ($routes) {
-                $menu_id = 6;
-                postRoute($routes, 'List', 'ApiWebsiteManagementController::EmployeeList', null, ['menu_id' => $menu_id, 'action_type' => MAT::View], 'clientapp');
-                postRoute($routes, 'Create', 'ApiWebsiteManagementController::EmployeeCreate', null, ['menu_id' => $menu_id, 'action_type' => MAT::Create], 'clientapp');
-                postRoute($routes, 'Update', 'ApiWebsiteManagementController::EmployeeUpdate', null, ['menu_id' => $menu_id, 'action_type' => MAT::Update], 'clientapp');
-                postRoute($routes, 'Delete', 'ApiWebsiteManagementController::EmployeeDelete', null, ['menu_id' => $menu_id, 'action_type' => MAT::Delete], 'clientapp');
-            });
-            $routes->group('ProductsAndServices', function ($routes) {
-                $menu_id = 7;
-                postRoute($routes, 'List', 'ApiWebsiteManagementController::ProductAndServicesList', null, ['menu_id' => $menu_id, 'action_type' => MAT::View], 'clientapp');
-                postRoute($routes, 'Create', 'ApiWebsiteManagementController::ProductAndServicesCreate', null, ['menu_id' => $menu_id, 'action_type' => MAT::Create], 'clientapp');
-                postRoute($routes, 'Update', 'ApiWebsiteManagementController::ProductAndServicesUpdate', null, ['menu_id' => $menu_id, 'action_type' => MAT::Update], 'clientapp');
-                postRoute($routes, 'Delete', 'ApiWebsiteManagementController::ProductAndServicesDelete', null, ['menu_id' => $menu_id, 'action_type' => MAT::Delete], 'clientapp');
-            });
-            $routes->group('MediaGallery', function ($routes) {
-                $menu_id = 8;
-                postRoute($routes, 'List', 'ApiWebsiteManagementController::MediaGalleryList', null, ['menu_id' => $menu_id, 'action_type' => MAT::View], 'clientapp');
-                postRoute($routes, 'Create', 'ApiWebsiteManagementController::MediaGalleryCreate', null, ['menu_id' => $menu_id, 'action_type' => MAT::Create], 'clientapp');
-                postRoute($routes, 'Update', 'ApiWebsiteManagementController::MediaGalleryUpdate', null, ['menu_id' => $menu_id, 'action_type' => MAT::Update], 'clientapp');
-                postRoute($routes, 'Delete', 'ApiWebsiteManagementController::MediaGalleryDelete', null, ['menu_id' => $menu_id, 'action_type' => MAT::Delete], 'clientapp');
-            });
-        });
-        // Website Management Mobile App Api With Midware End
-    });
-    $routes->group('BSS-ClientWeb-Api', function ($routes) {
-        $routes->group('WebsiteProfile', function ($routes) {
-            postRoute($routes, 'List', 'ApiWebsiteManagementController::WebsiteProfileGet', null, [], 'clientweb');
-        });
-        $routes->group('FormSubmissions', function ($routes) {
-            postRoute($routes, 'Create', 'ApiWebsiteManagementController::FormSubmissionsCreate', null, [], 'clientweb');
-        });
-        $routes->group('BlogPost', function ($routes) {
-            postRoute($routes, 'List', 'ApiWebsiteManagementController::BlogPostList', null, [], 'clientweb');
-        });
-        $routes->group('VisitorCount', function ($routes) {
-            $menu_id = 4;
-            postRoute($routes, 'Create', 'ApiWebsiteManagementController::VisitorsCountCreate', null, ['menu_id' => $menu_id, 'action_type' => MAT::View], 'clientapp');
-        });
-        $routes->group('Subscriber', function ($routes) {
-            postRoute($routes, 'Subscribe', 'ApiWebsiteManagementController::Subscribe', null, [], 'clientweb');
-            postRoute($routes, 'UnSubscribe', 'ApiWebsiteManagementController::UnSubscribe', null, [], 'clientweb');
-        });
-        $routes->group('ProductsAndServices', function ($routes) {
-            postRoute($routes, 'List', 'ApiWebsiteManagementController::ProductAndServicesList', null, [], 'clientweb');
-        });
-        $routes->group('MediaGallery', function ($routes) {
-            postRoute($routes, 'List', 'ApiWebsiteManagementController::MediaGalleryList', null, [], 'clientweb');
         });
     });
-
-    // Scan for additional module routes
-    $modulesDirectory = APPPATH . 'Modules/';
-    autoAddRoutes($modulesDirectory, $routes);
+    // Ecommerce Api Start
+    $routes->group('EcommerceApi', function ($routes) {
+        $routes->group('Customer', function ($routes) {
+            $routes->post('Login', 'EcommerceApiController::CustomerLogin');
+            $routes->post('Registration', 'EcommerceApiController::CustomerRegistration');
+            $routes->post('RegistrationVerification', 'EcommerceApiController::CustomerRegistrationVerification');
+            $routes->post('ForgetPassword', 'EcommerceApiController::CustomerForgetPassword');
+            $routes->post('ForgetPasswordVerification', 'EcommerceApiController::CustomerForgetPasswordVerification');
+        });
+        // Admin Panel Api Without Midware Start
+        $routes->group('Country', function ($routes) {
+            $routes->post('Get', 'EcommerceApiController::CountryGet');
+            $routes->post('List', 'EcommerceApiController::CountryList');
+            $routes->post('Create', 'EcommerceApiController::CountryCreate');
+            $routes->post('Update', 'EcommerceApiController::CountryUpdate');
+            $routes->post('Delete', 'EcommerceApiController::CountryDelete');
+        });
+        $routes->group('State', function ($routes) {
+            $routes->post('Get', 'EcommerceApiController::StateGet');
+            $routes->post('List', 'EcommerceApiController::StateList');
+            $routes->post('Create', 'EcommerceApiController::StateCreate');
+            $routes->post('Update', 'EcommerceApiController::StateUpdate');
+            $routes->post('Delete', 'EcommerceApiController::StateDelete');
+        });
+        $routes->group('City', function ($routes) {
+            $routes->post('Get', 'EcommerceApiController::CityGet');
+            $routes->post('List', 'EcommerceApiController::CityList');
+            $routes->post('Create', 'EcommerceApiController::CityCreate');
+            $routes->post('Update', 'EcommerceApiController::CityUpdate');
+            $routes->post('Delete', 'EcommerceApiController::CityDelete');
+        });
+    });
 }
+    // Main Routes End ------------------------------------------------------------------------------------------------------------------------
+
+//     // Hansa Old Design Routes Start ----------------------------------------------------------------------------------------------------------
+//     $routes->group('hansa', function ($routes) {
+//         $routes->get('/', 'HansaPageController::dashboard');
+//         $routes->get('login', 'HansaPageController::login');
+//         $routes->get('user', 'HansaPageController::user');
+//         $routes->get('all-orders', 'HansaPageController::all_orders');
+//         $routes->get('order-detail', 'HansaPageController::order_detail');
+//         $routes->get('add-dealoftheday', 'HansaPageController::add_dealoftheday');
+//         $routes->get('add-offer', 'HansaPageController::add_offer');
+//         $routes->get('enquiry-list', 'HansaPageController::enquiry_list');
+//         $routes->get('invoice', 'HansaPageController::Invoice');
+//         $routes->get('invoice-print', 'HansaPageController::invoice_print');
+//         $routes->get('generate-bill', 'HansaPageController::Generate_bill');
+//         $routes->get('user-list', 'HansaPageController::user_list');
+//         $routes->get('user-order-history', 'HansaPageController::user_order_history');
+
+//         // Delivery Admin routes
+//         $routes->get('delivery-dashboard', 'HansaPageController::delivery_dashboard');
+//         $routes->get('delivery-all-orders', 'HansaPageController::delivery_all_orders');
+//         $routes->get('delivery-order-shipped', 'HansaPageController::delivery_order_shipped');
+//         $routes->get('delivery-order-delivered', 'HansaPageController::delivery_order_deliverd');
+//         $routes->get('delivery-order-cancelled', 'HansaPageController::delivery_order_cancelled');
+
+//         // Financial Admin routes
+//         $routes->get('financial-dashboard', 'HansaPageController::financial_dashboard');
+//         $routes->get('financial-products', 'HansaPageController::financial_Products');
+
+//         // Inventory Admin routes
+//         $routes->get('inventory-dashboard', 'HansaPageController::inventory_dashboard');
+//         $routes->get('inventory-add-category', 'HansaPageController::inventory_add_category');
+//         $routes->get('inventory-add-category-type', 'HansaPageController::inventory_AddCategoryType');
+//         $routes->get('inventory-add-color', 'HansaPageController::inventory_AddColor');
+//         $routes->get('inventory-add-product', 'HansaPageController::inventory_AddProduct');
+//         $routes->get('inventory-list-products', 'HansaPageController::inventory_ListProducts');
+//         $routes->get('inventory-edit-product', 'HansaPageController::inventory_EditProduct');
+//         $routes->get('inventory-product-detail', 'HansaPageController::inventory_ProductDetail');
+
+//         // Stock Admin routes
+//         $routes->get('stock-dashboard', 'HansaPageController::stock_dashboard');
+//         $routes->get('stock-products', 'HansaPageController::stock_Products');
+
+//         // Finance routes (potential duplicates, ensure correctness)
+//         $routes->get('finance-dashboard', 'HansaPageController::finance_dashboard');
+//         $routes->get('finance-products', 'HansaPageController::finance_Products');
+//     });
+//     // Hansa Old Design Routes End ----------------------------------------------------------------------------------------------------------
+
+//     // Theme Design Samples Start -----------------------------------------------------------------------------------------------------------
+//     $routes->get('/theme', 'Home::index');
+
+//     // Language
+//     $routes->get('/lang/{locale}', 'Language::index');
+
+//     $routes->get('index-2', 'Home::show_index_2');
+
+//     // Vertical Layout Pages Routes
+//     $routes->get('layouts-compact-sidebar', 'Home::show_layouts_compact_sidebar');
+//     $routes->get('layouts-icon-sidebar', 'Home::show_layouts_icon_sidebar');
+//     $routes->get('layouts-boxed', 'Home::show_layouts_boxed');
+//     $routes->get('layouts-preloader', 'Home::show_layouts_preloader');
+
+//     // Horizontal Layout Pages Routes
+//     $routes->get('layouts-horizontal', 'Home::show_layouts_horizontal');
+//     $routes->get('layouts-hori-topbarlight', 'Home::show_layouts_hori_topbarlight');
+//     $routes->get('layouts-hori-boxed', 'Home::show_layouts_hori_boxed');
+//     $routes->get('layouts-hori-preloader', 'Home::show_layouts_hori_preloader');
+
+//     // Calender
+//     $routes->get('calendar', 'Home::show_calendar');
+
+//     // Email
+//     $routes->get('email-inbox', 'Home::show_email_inbox');
+//     $routes->get('email-read', 'Home::show_email_read');
+
+//     // Tasks
+//     $routes->get('tasks-list', 'Home::show_tasks_list');
+//     $routes->get('tasks-kanban', 'Home::show_tasks_kanban');
+//     $routes->get('tasks-create', 'Home::show_tasks_create');
+
+//     // Pages
+//     $routes->get('pages-login', 'Home::show_pages_login');
+//     $routes->get('pages-register', 'Home::show_pages_register');
+//     $routes->get('pages-recoverpw', 'Home::show_pages_recoverpw');
+//     $routes->get('pages-lock-screen', 'Home::show_pages_lock_screen');
+//     $routes->get('pages-starter', 'Home::show_pages_starter');
+//     $routes->get('pages-invoice', 'Home::show_pages_invoice');
+//     $routes->get('pages-profile', 'Home::show_pages_profile');
+//     $routes->get('pages-maintenance', 'Home::show_pages_maintenance');
+//     $routes->get('pages-comingsoon', 'Home::show_pages_comingsoon');
+//     $routes->get('pages-timeline', 'Home::show_pages_timeline');
+//     $routes->get('pages-faqs', 'Home::show_pages_faqs');
+//     $routes->get('pages-pricing', 'Home::show_pages_pricing');
+//     $routes->get('pages-404', 'Home::show_pages_404');
+//     $routes->get('pages-500', 'Home::show_pages_500');
+
+//     // UI Elements
+//     $routes->get('ui-alerts', 'Home::show_ui_alerts');
+//     $routes->get('ui-buttons', 'Home::show_ui_buttons');
+//     $routes->get('ui-cards', 'Home::show_ui_cards');
+//     $routes->get('ui-carousel', 'Home::show_ui_carousel');
+//     $routes->get('ui-dropdowns', 'Home::show_ui_dropdowns');
+//     $routes->get('ui-grid', 'Home::show_ui_grid');
+//     $routes->get('ui-images', 'Home::show_ui_images');
+//     $routes->get('ui-lightbox', 'Home::show_ui_lightbox');
+//     $routes->get('ui-modals', 'Home::show_ui_modals');
+//     $routes->get('ui-rangeslider', 'Home::show_ui_rangeslider');
+//     $routes->get('ui-session-timeout', 'Home::show_ui_session_timeout');
+//     $routes->get('ui-progressbars', 'Home::show_ui_progressbars');
+//     $routes->get('ui-sweet-alert', 'Home::show_ui_sweet_alert');
+//     $routes->get('ui-tabs-accordions', 'Home::show_ui_tabs_accordions');
+//     $routes->get('ui-typography', 'Home::show_ui_typography');
+//     $routes->get('ui-video', 'Home::show_ui_video');
+//     $routes->get('ui-general', 'Home::show_ui_general');
+//     $routes->get('ui-colors', 'Home::show_ui_colors');
+//     $routes->get('ui-rating', 'Home::show_ui_rating');
+
+//     // Forms
+//     $routes->get('form-elements', 'Home::show_form_elements');
+//     $routes->get('form-validation', 'Home::show_form_validation');
+//     $routes->get('form-advanced', 'Home::show_form_advanced');
+//     $routes->get('form-editors', 'Home::show_form_editors');
+//     $routes->get('form-uploads', 'Home::show_form_uploads');
+//     $routes->get('form-xeditable', 'Home::show_form_xeditable');
+//     $routes->get('form-repeater', 'Home::show_form_repeater');
+//     $routes->get('form-wizard', 'Home::show_form_wizard');
+//     $routes->get('form-mask', 'Home::show_form_mask');
+
+//     // Tables
+//     $routes->get('tables-basic', 'Home::show_tables_basic');
+//     $routes->get('tables-datatable', 'Home::show_tables_datatable');
+//     $routes->get('tables-responsive', 'Home::show_tables_responsive');
+//     $routes->get('tables-editable', 'Home::show_tables_editable');
+
+//     // Charts
+//     $routes->get('charts-apex', 'Home::show_charts_apex');
+//     $routes->get('charts-chartjs', 'Home::show_charts_chartjs');
+//     $routes->get('charts-flot', 'Home::show_charts_flot');
+//     $routes->get('charts-knob', 'Home::show_charts_knob');
+//     $routes->get('charts-sparkline', 'Home::show_charts_sparkline');
+
+//     // Icons
+//     $routes->get('icons-boxicons', 'Home::show_icons_boxicons');
+//     $routes->get('icons-materialdesign', 'Home::show_icons_materialdesign');
+//     $routes->get('icons-dripicons', 'Home::show_icons_dripicons');
+//     $routes->get('icons-fontawesome', 'Home::show_icons_fontawesome');
+
+//     // Maps
+//     $routes->get('maps-google', 'Home::show_maps_google');
+//     $routes->get('maps-vector', 'Home::show_maps_vector');
+
+//     // Client accoding pages
+//     $routes->get('vendor-list', 'Client::vendor');
+//     $routes->get('media-type', 'Client::media_type');
+
+//     // Theme Design Samples End -----------------------------------------------------------------------------------------------------------
+// }

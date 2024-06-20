@@ -5,6 +5,9 @@ namespace App\Models;
 use ApiResponseStatusCode;
 use CodeIgniter\Model;
 use App\Traits\CommonTraits;
+use Exception;
+use Firebase\JWT\JWT;
+use RuntimeException;
 
 class FunctionModel extends Model
 {
@@ -16,7 +19,12 @@ class FunctionModel extends Model
     protected string $deleteRecordSuccessMsg;
     protected string $validationFailedMsg;
     protected string $updateRecordIdNotFoundMsg;
-
+    /** @var array Stores join configurations */
+    protected array $joins;
+    public function __construct()
+    {
+        parent::__construct();
+    }
     public function initializeMessages()
     {
         if (!isset($this->messageAlias) || empty($this->messageAlias)) {
@@ -144,6 +152,19 @@ class FunctionModel extends Model
         $this->initializeMessages();
         try {
             if (!empty($filter)) {
+                if (array_key_exists('select', $filter) && !empty($filter['select'])) {
+                    $this->select($this->getTable() . "." . $filter['select']);
+                    unset($filter['select']);
+                }
+                if (array_key_exists('autojoin', $filter) && !empty($filter['autojoin'])) {
+                    if (strtoupper($filter['autojoin']) == 'Y') {
+                        $this->autoJoin();
+                    }
+                    if (strtoupper($filter['autojoin']) == 'F') {
+                        $this->autoJoin(true);
+                    }
+                    unset($filter['autojoin']);
+                }
                 foreach ($filter as $key => $value) {
                     // Check if the key is valid and value is not empty
                     if (!empty($value)) {
@@ -229,15 +250,179 @@ class FunctionModel extends Model
             return formatCommonResponse(ApiResponseStatusCode::BAD_REQUEST,  $th->getMessage());
         }
     }
-    protected function autoJoin(){
-        // Create This Join in Model
-            // protected $autoJoin = [
-            //     'fieldName' => [
-            //         'ref_table' => 'table_name',
-            //         'ref_column' => 'column_name',
-            //         'join_type' => 'left',
-            //     ],
-            //     // Add more auto-join definitions as needed
-            // ];
+    public function hashPassword($data)
+    {
+        $passwordField = $this->passwordField ?? null;
+        if (!empty($passwordField)) {
+            $data['data'][$passwordField] = password_hash($data['data'][$passwordField], PASSWORD_DEFAULT);
+        }
+        return $data;
+    }
+    public function checkLogin(string $username, string $password)
+    {
+
+        try {
+            $loginFields = $this->loginFields ?? null;
+            if (empty($loginFields)) {
+                return formatCommonResponse(ApiResponseStatusCode::BAD_REQUEST, '$loginFields = [] not set in models');
+            }
+            // Get a new instance of Query Builder
+            $builder = $this->builder();
+
+            // Start a new OR group
+            $builder->groupStart();
+
+            foreach ($loginFields as $key => $field) {
+                // Add OR condition for each login field
+                $builder->orWhere($field, $username);
+            }
+
+            // Close the OR group
+            $builder->groupEnd();
+
+            // Execute the query to find the user by username
+            $user = $builder->get()->getRowArray();
+            if (empty($user)) {
+                return formatCommonResponse(ApiResponseStatusCode::VALIDATION_FAILED, 'No Record Found', [], ['error' => 'Username not Found']);
+            }
+            // Check if user exists and password matches
+            if ($user && !password_verify($password, $user['password'])) {
+                return formatCommonResponse(ApiResponseStatusCode::VALIDATION_FAILED, 'Invalid Credential', [], ['error' => 'Invalid Credential']);
+            } else {
+                return formatCommonResponse(ApiResponseStatusCode::OK, 'Login Success', $user);
+            }
+        } catch (\Throwable $th) {
+            return formatCommonResponse(ApiResponseStatusCode::BAD_REQUEST, $th->getMessage());
+        }
+    }
+
+    public function generateJWTToken(array $data): string
+    {
+        // Retrieve JWT secret key from environment variables
+        $key = $_ENV['JWT_SECRET_KEY'] ?? "";
+
+        // Check if JWT secret key is set
+        if (empty($key)) {
+            throw new RuntimeException('JWT_SECRET_KEY not set in ENV');
+        }
+
+        // Algorithm for JWT token
+        $algorithm = 'HS256';
+
+        try {
+            // Generate JWT token
+            $token = JWT::encode($data, $key, $algorithm);
+            return $token;
+        } catch (Exception $e) {
+            // Handle token generation error
+            throw new RuntimeException('Error generating JWT token: ' . $e->getMessage());
+        }
+    }
+    protected function getJoins()
+    {
+        if (!empty($this->joins)) {
+            return $this->joins;
+        } else {
+            return null;
+        }
+    }
+    /**
+     * Add a Parent join configuration.
+     *
+     * @param string $fieldName Field name in the current table
+     * @param string $refTableName Referenced table name
+     * @param string $refFieldName Field name in the referenced table
+     * @param string $joinMethod Join method (e.g., 'left', 'inner')
+     * @param array $selectField Optional array of fields to select from the referenced table
+     * @return void
+     */
+    protected function addParentJoin(string $fieldName, object $modelInstance, string $joinMethod = 'left', array $selectField = []): void
+    {
+        $this->joins[] = [
+            'tableName' => $this->getTable(),
+            'fieldName' => $fieldName,
+            'refTableName' => $modelInstance->getTable(),
+            'refFieldName' => $modelInstance->getPrimaryKey(),
+            'joinMethod' => $joinMethod,
+            'selectField' => $selectField,
+        ];
+        if (!empty($modelInstance->getJoins())) {
+            $this->joins = array_merge($this->joins, $modelInstance->getJoins());
+        }
+    }
+
+    /**
+     * Automatically applies joins based on configurations.
+     *
+     * @param bool $familyJoin Whether to include joins not related to the current model
+     * @return object $this Returns the current object for method chaining
+     * @throws Exception If an error occurs during the join process
+     */
+    public function autoJoin($familyJoin = false): object
+    {
+        if (!empty($this->joins)) {
+            $uniqueJoins = $this->removeDuplicateJoins($this->joins);
+
+            foreach ($uniqueJoins as $join) {
+                if (!$familyJoin && $join['tableName'] != $this->getTable()) {
+                    continue;
+                }
+
+                try {
+                    $this->applyJoin($join);
+                } catch (Exception $e) {
+                    throw new Exception("Error applying join: " . $e->getMessage());
+                }
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Removes duplicate joins based on refTableName.
+     *
+     * @param array $joins The array of join configurations
+     * @return array The array of unique join configurations
+     */
+    private function removeDuplicateJoins(array $joins): array
+    {
+        $refTableNames = array_column($joins, 'refTableName');
+        $uniqueRefTableNames = array_unique($refTableNames);
+
+        $uniqueJoins = array_filter($joins, function ($item) use ($uniqueRefTableNames) {
+            static $seen = [];
+            if (isset($seen[$item['refTableName']])) {
+                return false;
+            }
+            $seen[$item['refTableName']] = true;
+            return true;
+        });
+
+        return $uniqueJoins;
+    }
+
+    /**
+     * Applies a single join based on the given configuration.
+     *
+     * @param array $join The join configuration
+     * @return void
+     * @throws Exception If an error occurs during the join process
+     */
+    private function applyJoin(array $join): void
+    {
+        if (empty($join['selectField'])) {
+            $this->select($join['refTableName'] . ".*");
+        } else {
+            foreach ($join['selectField'] as $field) {
+                $this->select($join['refTableName'] . "." . $field);
+            }
+        }
+
+        $this->join(
+            $join['refTableName'],
+            $join['tableName'] . "." . $join['fieldName'] . "=" . $join['refTableName'] . "." . $join['refFieldName'],
+            $join['joinMethod']
+        );
     }
 }

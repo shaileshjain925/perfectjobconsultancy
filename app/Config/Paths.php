@@ -12,6 +12,11 @@ namespace Config;
  * share a system folder between multiple applications, and more.
  *
  * All paths are relative to the project's root folder.
+ *
+ * NOTE: This class is required prior to Autoloader instantiation,
+ *       and does not extend BaseConfig.
+ *
+ * @immutable
  */
 class Paths
 {
@@ -71,6 +76,5 @@ class Paths
      * default this is in `app/Views`. This value
      * is used when no value is provided to `Services::renderer()`.
      */
-    // public string $viewDirectory = __DIR__ . '/../Views';
-    public string $viewDirectory = __DIR__ . '/..';
+    public string $viewDirectory = __DIR__ . '/../Views';
 }

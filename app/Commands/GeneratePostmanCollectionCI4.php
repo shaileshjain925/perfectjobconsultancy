@@ -66,6 +66,9 @@ class GeneratePostmanCollectionCI4 extends BaseCommand
                 $ControllerFunctionPath = $classKey;
 
                 // Split the ControllerFunctionPath into class and method
+                if(is_object($ControllerFunctionPath)){
+                    continue;
+                } 
                 list($controllerClass, $method) = explode("::", $ControllerFunctionPath);
 
                 // Remove leading backslash if present
@@ -159,6 +162,16 @@ class GeneratePostmanCollectionCI4 extends BaseCommand
     }
     public function itemEndPointResponse(&$item)
     {
+        $uncommented = $item['functionComment'];
+
+        $uncommented = str_replace("/**","",$item['functionComment']);
+        $uncommented = str_replace("**/","",$item['functionComment']);
+        $uncommented = str_replace("*/","",$item['functionComment']);
+        $uncommented = str_replace("*","",$item['functionComment']);
+        
+        
+        $item['functionComment'] = $item['functionComment'].$uncommented;
+        
         return [
             "name" => $item['functionName'],
             "request" => [
@@ -166,7 +179,7 @@ class GeneratePostmanCollectionCI4 extends BaseCommand
                 "header" => [],
                 "body" => [
                     "mode" => "raw",
-                    "raw" => $item['functionComment'], // Use function comment here
+                    "raw" => $item['functionComment'], // Use function comment here          
                     "options" => [
                         "raw" => [
                             "language" => "json"

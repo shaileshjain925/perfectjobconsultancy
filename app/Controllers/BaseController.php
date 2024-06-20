@@ -8,7 +8,6 @@ use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
-use App\Traits\CommonTraits;
 
 /**
  * Class BaseController
@@ -22,8 +21,6 @@ use App\Traits\CommonTraits;
  */
 abstract class BaseController extends Controller
 {
-  use CommonTraits;
-
     /**
      * Instance of the main Request object.
      *
@@ -36,9 +33,9 @@ abstract class BaseController extends Controller
      * class instantiation. These helpers will be available
      * to all other controllers that extend BaseController.
      *
-     * @var array
+     * @var list<string>
      */
-    protected $helpers = ['form','html','commonfunction'];
+    protected $helpers = ['commonfunction'];
 
     /**
      * Be sure to declare properties for any property fetch you initialized.
@@ -54,8 +51,12 @@ abstract class BaseController extends Controller
         // Do Not Edit This Line
         parent::initController($request, $response, $logger);
 
-        // Preload any models, libraries, etc, here.
-
-        // E.g.: $this->session = \Config\Services::session();
-    }
+		//--------------------------------------------------------------------
+		// Preload any models, libraries, etc, here.
+		//--------------------------------------------------------------------
+		// E.g.: $this->session = \Config\Services::session();
+		$session = \Config\Services::session();
+      	$language = \Config\Services::language();
+      	$language->setLocale($session->lang);
+	}
 }
