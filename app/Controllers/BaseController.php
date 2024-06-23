@@ -8,6 +8,7 @@ use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use App\Traits\CommonTraits;
 
 /**
  * Class BaseController
@@ -21,6 +22,7 @@ use Psr\Log\LoggerInterface;
  */
 abstract class BaseController extends Controller
 {
+    use CommonTraits;
     /**
      * Instance of the main Request object.
      *
@@ -35,7 +37,7 @@ abstract class BaseController extends Controller
      *
      * @var list<string>
      */
-    protected $helpers = ['commonfunction'];
+    protected $helpers = ['commonfunction','cookie','url','from'];
 
     /**
      * Be sure to declare properties for any property fetch you initialized.

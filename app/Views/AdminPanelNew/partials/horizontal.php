@@ -490,7 +490,7 @@
                     <a class="dropdown-item" href="/pages-lock-screen"><i class="bx bx-lock-open font-size-16 align-middle me-1"></i>
                     <?= lang('Files.Lock_screen') ?></a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item text-danger" href="/pages-login"><i
+                    <a class="dropdown-item text-danger" href="<?=base_url(route_to('admin_logout_page'))?>"><i
                             class="bx bx-power-off font-size-16 align-middle me-1 text-danger"></i> <?= lang('Files.Logout') ?></a>
                 </div>
             </div>

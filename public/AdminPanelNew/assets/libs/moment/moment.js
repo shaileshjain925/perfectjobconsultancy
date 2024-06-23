@@ -492,7 +492,7 @@
 
     var aliases = {};
 
-    function addUnitAlias (unit, shorthand) {
+    function unitAlias (unit, shorthand) {
         var lowerCase = unit.toLowerCase();
         aliases[lowerCase] = aliases[lowerCase + 's'] = aliases[shorthand] = unit;
     }
@@ -520,7 +520,7 @@
 
     var priorities = {};
 
-    function addUnitPriority(unit, priority) {
+    function unitPriority(unit, priority) {
         priorities[unit] = priority;
     }
 
@@ -741,11 +741,11 @@
 
     // ALIASES
 
-    addUnitAlias('year', 'y');
+    unitAlias('year', 'y');
 
     // PRIORITIES
 
-    addUnitPriority('year', 1);
+    unitPriority('year', 1);
 
     // PARSING
 
@@ -891,11 +891,11 @@
 
     // ALIASES
 
-    addUnitAlias('month', 'M');
+    unitAlias('month', 'M');
 
     // PRIORITY
 
-    addUnitPriority('month', 8);
+    unitPriority('month', 8);
 
     // PARSING
 
@@ -1244,13 +1244,13 @@
 
     // ALIASES
 
-    addUnitAlias('week', 'w');
-    addUnitAlias('isoWeek', 'W');
+    unitAlias('week', 'w');
+    unitAlias('isoWeek', 'W');
 
     // PRIORITIES
 
-    addUnitPriority('week', 5);
-    addUnitPriority('isoWeek', 5);
+    unitPriority('week', 5);
+    unitPriority('isoWeek', 5);
 
     // PARSING
 
@@ -1317,14 +1317,14 @@
 
     // ALIASES
 
-    addUnitAlias('day', 'd');
-    addUnitAlias('weekday', 'e');
-    addUnitAlias('isoWeekday', 'E');
+    unitAlias('day', 'd');
+    unitAlias('weekday', 'e');
+    unitAlias('isoWeekday', 'E');
 
     // PRIORITY
-    addUnitPriority('day', 11);
-    addUnitPriority('weekday', 11);
-    addUnitPriority('isoWeekday', 11);
+    unitPriority('day', 11);
+    unitPriority('weekday', 11);
+    unitPriority('isoWeekday', 11);
 
     // PARSING
 
@@ -1695,10 +1695,10 @@
 
     // ALIASES
 
-    addUnitAlias('hour', 'h');
+    unitAlias('hour', 'h');
 
     // PRIORITY
-    addUnitPriority('hour', 13);
+    unitPriority('hour', 13);
 
     // PARSING
 
@@ -3640,13 +3640,13 @@
 
     // ALIASES
 
-    addUnitAlias('weekYear', 'gg');
-    addUnitAlias('isoWeekYear', 'GG');
+    unitAlias('weekYear', 'gg');
+    unitAlias('isoWeekYear', 'GG');
 
     // PRIORITY
 
-    addUnitPriority('weekYear', 1);
-    addUnitPriority('isoWeekYear', 1);
+    unitPriority('weekYear', 1);
+    unitPriority('isoWeekYear', 1);
 
 
     // PARSING
@@ -3722,11 +3722,11 @@
 
     // ALIASES
 
-    addUnitAlias('quarter', 'Q');
+    unitAlias('quarter', 'Q');
 
     // PRIORITY
 
-    addUnitPriority('quarter', 7);
+    unitPriority('quarter', 7);
 
     // PARSING
 
@@ -3747,10 +3747,10 @@
 
     // ALIASES
 
-    addUnitAlias('date', 'D');
+    unitAlias('date', 'D');
 
     // PRIORITY
-    addUnitPriority('date', 9);
+    unitPriority('date', 9);
 
     // PARSING
 
@@ -3778,10 +3778,10 @@
 
     // ALIASES
 
-    addUnitAlias('dayOfYear', 'DDD');
+    unitAlias('dayOfYear', 'DDD');
 
     // PRIORITY
-    addUnitPriority('dayOfYear', 4);
+    unitPriority('dayOfYear', 4);
 
     // PARSING
 
@@ -3806,11 +3806,11 @@
 
     // ALIASES
 
-    addUnitAlias('minute', 'm');
+    unitAlias('minute', 'm');
 
     // PRIORITY
 
-    addUnitPriority('minute', 14);
+    unitPriority('minute', 14);
 
     // PARSING
 
@@ -3828,11 +3828,11 @@
 
     // ALIASES
 
-    addUnitAlias('second', 's');
+    unitAlias('second', 's');
 
     // PRIORITY
 
-    addUnitPriority('second', 15);
+    unitPriority('second', 15);
 
     // PARSING
 
@@ -3877,11 +3877,11 @@
 
     // ALIASES
 
-    addUnitAlias('millisecond', 'ms');
+    unitAlias('millisecond', 'ms');
 
     // PRIORITY
 
-    addUnitPriority('millisecond', 16);
+    unitPriority('millisecond', 16);
 
     // PARSING
 

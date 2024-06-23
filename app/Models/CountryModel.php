@@ -29,7 +29,8 @@ class CountryModel extends FunctionModel
 
     // Validation
     protected $validationRules = [
-        'country_name' => 'required|max_length[100]',
+        'country_id'=>'permit_empty',
+        'country_name' => 'required|max_length[100]|is_unique[country_name,country_id,{country_id}]',
         'alias' => 'max_length[3]',
         'short_name' => 'max_length[2]',
         'phonecode' => 'max_length[255]',
@@ -52,4 +53,8 @@ class CountryModel extends FunctionModel
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function getTableName(){
+        return $this->table;
+    }
 }

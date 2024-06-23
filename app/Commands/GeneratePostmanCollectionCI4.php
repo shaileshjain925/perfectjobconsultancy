@@ -4,7 +4,10 @@ namespace App\Commands;
 
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
+use PHPUnit\Framework\Constraint\StringContains;
 use ReflectionMethod;
+
+use function PHPUnit\Framework\stringContains;
 
 class GeneratePostmanCollectionCI4 extends BaseCommand
 {
@@ -27,7 +30,7 @@ class GeneratePostmanCollectionCI4 extends BaseCommand
             'default' => 'postman_collection.json',
         ],
     ];
-    // php spark postman:generate --collectionname AnmolCollection --baseUrlVariable api_url --filename mycollection.json
+    // php spark postman:generate --collectionname HansaHandloom --baseUrlVariable api_url --filename mycollection.json
     public function run(array $params)
     {
         try {
@@ -66,9 +69,9 @@ class GeneratePostmanCollectionCI4 extends BaseCommand
                 $ControllerFunctionPath = $classKey;
 
                 // Split the ControllerFunctionPath into class and method
-                if(is_object($ControllerFunctionPath)){
+                if (is_object($ControllerFunctionPath)) {
                     continue;
-                } 
+                }
                 list($controllerClass, $method) = explode("::", $ControllerFunctionPath);
 
                 // Remove leading backslash if present
@@ -134,7 +137,10 @@ class GeneratePostmanCollectionCI4 extends BaseCommand
         $groupItem['item'] = [];
         // dd($customRoutes);
         foreach ($customRoutes as $groupName => $endpoints) {
-            $collection['item'][] = $this->itemFolderProcess($endpoints, $groupName);
+            $pattern = '/api/i';
+            if (preg_match($pattern, $groupName)) {
+                $collection['item'][] = $this->itemFolderProcess($endpoints, $groupName);
+            }
         }
         // Convert the collection to JSON
         $collectionJson = json_encode($collection, JSON_PRETTY_PRINT);
@@ -164,14 +170,14 @@ class GeneratePostmanCollectionCI4 extends BaseCommand
     {
         $uncommented = $item['functionComment'];
 
-        $uncommented = str_replace("/**","",$item['functionComment']);
-        $uncommented = str_replace("**/","",$item['functionComment']);
-        $uncommented = str_replace("*/","",$item['functionComment']);
-        $uncommented = str_replace("*","",$item['functionComment']);
-        
-        
-        $item['functionComment'] = $item['functionComment'].$uncommented;
-        
+        $uncommented = str_replace("/**", "", $item['functionComment']);
+        $uncommented = str_replace("**/", "", $item['functionComment']);
+        $uncommented = str_replace("*/", "", $item['functionComment']);
+        $uncommented = str_replace("*", "", $item['functionComment']);
+
+
+        $item['functionComment'] = $item['functionComment'] . $uncommented;
+
         return [
             "name" => $item['functionName'],
             "request" => [

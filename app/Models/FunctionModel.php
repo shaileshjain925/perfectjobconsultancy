@@ -152,18 +152,27 @@ class FunctionModel extends Model
         $this->initializeMessages();
         try {
             if (!empty($filter)) {
-                if (array_key_exists('select', $filter) && !empty($filter['select'])) {
-                    $this->select($this->getTable() . "." . $filter['select']);
-                    unset($filter['select']);
+                if (array_key_exists('_select', $filter) && !empty($filter['_select'])) {
+                    $this->select($this->getTable() . "." . $filter['_select']);
+                    unset($filter['_select']);
                 }
-                if (array_key_exists('autojoin', $filter) && !empty($filter['autojoin'])) {
-                    if (strtoupper($filter['autojoin']) == 'Y') {
+                if (array_key_exists('_autojoin', $filter) && !empty($filter['_autojoin'])) {
+                    if (strtoupper($filter['_autojoin']) == 'Y') {
                         $this->autoJoin();
                     }
-                    if (strtoupper($filter['autojoin']) == 'F') {
+                    if (strtoupper($filter['_autojoin']) == 'F') {
                         $this->autoJoin(true);
                     }
-                    unset($filter['autojoin']);
+                    unset($filter['_autojoin']);
+                }
+                if (array_key_exists('_whereIn', $filter) && !empty($filter['_whereIn'] && is_array($filter['_whereIn']))) {
+                    foreach ($filter['_whereIn'] as $key => $fields) {
+                        # code...
+                        if(array_key_exists('fieldname',$fields) && array_key_exists('value',$fields)){
+                            $this->whereIn($fields['fieldname'],$fields['value']);
+                        }
+                    }
+                    unset($filter['_whereIn']);
                 }
                 foreach ($filter as $key => $value) {
                     // Check if the key is valid and value is not empty
@@ -218,7 +227,7 @@ class FunctionModel extends Model
     {
         $this->initializeMessages();
         try {
-            if ($this->get($primaryKey)['status'] != ApiResponseStatusCode::OK) {
+            if (empty($this->find($primaryKey))) {
                 return formatCommonResponse(ApiResponseStatusCode::NO_CONTENT, $this->updateRecordIdNotFoundMsg, $data, [$this->getPrimaryKey() => $this->getPrimaryKey() . ' Not Found']);
             }
             $result = $this->update($primaryKey, $data);
@@ -253,7 +262,7 @@ class FunctionModel extends Model
     public function hashPassword($data)
     {
         $passwordField = $this->passwordField ?? null;
-        if (!empty($passwordField)) {
+        if (!empty($passwordField) && array_key_exists($passwordField, $data['data'])) {
             $data['data'][$passwordField] = password_hash($data['data'][$passwordField], PASSWORD_DEFAULT);
         }
         return $data;
@@ -286,7 +295,7 @@ class FunctionModel extends Model
                 return formatCommonResponse(ApiResponseStatusCode::VALIDATION_FAILED, 'No Record Found', [], ['error' => 'Username not Found']);
             }
             // Check if user exists and password matches
-            if ($user && !password_verify($password, $user['password'])) {
+            if ($user && !password_verify($password, $user[$this->passwordField])) {
                 return formatCommonResponse(ApiResponseStatusCode::VALIDATION_FAILED, 'Invalid Credential', [], ['error' => 'Invalid Credential']);
             } else {
                 return formatCommonResponse(ApiResponseStatusCode::OK, 'Login Success', $user);
@@ -424,5 +433,16 @@ class FunctionModel extends Model
             $join['tableName'] . "." . $join['fieldName'] . "=" . $join['refTableName'] . "." . $join['refFieldName'],
             $join['joinMethod']
         );
+    }
+
+    public function updateBooleanFields($data)
+    {
+        $booleanFields = $this->booleanFields ?? null;
+        foreach ($booleanFields as $key => $field) {
+            if (!isset($data['data'][$field])) {
+                $data['data'][$field] = 0;
+            }
+        }
+        return $data;
     }
 }

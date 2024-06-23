@@ -9,6 +9,7 @@ class CityModel extends FunctionModel
     // protected $DBGroup          = 'default';
     protected $table            = 'city';
     protected $primaryKey       = 'city_id';
+    protected $messageAlias = 'City';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;

@@ -101,14 +101,14 @@ enum InputType: string
   case list = "list";
   case datalist = "datalist";
 }
-enum RelationType: string
+enum UserType: string
 {
-  case Husband = "Husband";
-  case Wife = "Wife";
-  case Father = "Father";
-  case Mother = "Mother";
-  case Daughter = "Daughter";
-  case Son = "Son";
+  case Admin = "admin";
+  case Purchase = "purchase";
+  case Finance = "finance";
+  case Order = "order";
+  case Delivery = "delivery";
+  case Stock = "stock";
 }
 function getEnumAsArray($enumType)
 {
@@ -232,6 +232,82 @@ if (!function_exists('uploadFile')) {
     return $result;
   }
 }
+
+if (!function_exists('uploadImageWithThumbnail')) {
+  /**
+   * Uploads an image with thumbnail conversion to WebP.
+   *
+   * @param array $fileObject The uploaded file object ($_FILES['file']).
+   * @param string $folderPath The folder path relative to public/ where images will be stored.
+   * @return array|false An array containing 'original_path', 'webp_path', 'thumbnail_path', or false on failure.
+   */
+  function uploadImageWithThumbnail(array $fileObject, string $folderPath, &$errorMessage, float $resizeRatio = 0.5)
+  {
+    // CodeIgniter 4 base path
+    $publicPath = FCPATH;
+
+    // Ensure the folder path exists or create it
+    $uploadPath = $publicPath . $folderPath;
+    if (!is_dir($uploadPath)) {
+      if (!mkdir($uploadPath, 0777, true)) {
+        $errorMessage = "Unable to Create Folder: " . $uploadPath;
+        return false; // Failed to create directory
+      }
+    }
+    if (!is_dir($uploadPath."/thumbnail/")) {
+      if (!mkdir($uploadPath."/thumbnail/", 0777, true)) {
+        $errorMessage = "Unable to Create Folder: " . $uploadPath;
+        return false; // Failed to create directory
+      }
+    }
+
+    // Check if the file was uploaded successfully
+    if ($fileObject['error'] !== UPLOAD_ERR_OK) {
+      $errorMessage = "Invalid Image Object";
+      return false; // Upload error
+    }
+
+    // Generate unique filename
+    $filename = uniqid('img_') . '_' . time();
+
+    // Original image path
+    $originalPath = $uploadPath . '/' . $filename . '.' . pathinfo($fileObject['name'], PATHINFO_EXTENSION);
+
+    // Move uploaded file to destination
+    if (!move_uploaded_file($fileObject['tmp_name'], $originalPath)) {
+      $errorMessage = "Image Not Able To Upload" . $uploadPath;
+      return false; // Failed to move uploaded file
+    }
+    try {
+      // Convert to WebP and create thumbnail
+      $image = \Config\Services::image();
+      $image->withFile($originalPath)
+        ->convert(IMAGETYPE_WEBP)
+        ->save($uploadPath . '/' . $filename . '.webp');
+
+      // Create thumbnail (adjust dimensions as needed)
+      $thumbnailPath = $uploadPath . '/thumbnail/' . $filename . '.webp';
+      list($width, $height) = getimagesize($originalPath);
+      $image = \Config\Services::image();
+      $image->withFile($originalPath)
+        ->resize(intval($width * $resizeRatio), intval($height * $resizeRatio), true)
+        ->convert(IMAGETYPE_WEBP)
+        ->save($thumbnailPath);
+      // Return paths
+      deleteFile($originalPath);
+      return [
+        'image_path' => $folderPath . '/' . $filename . '.webp',
+        'image_thumbnail_path' => $folderPath . '/thumbnail/' . $filename . '.webp',
+        'image_path_url' => base_url($folderPath . '/' . $filename . '.webp'),
+        'image_thumbnail_url' => base_url($folderPath . '/thumbnail/' . $filename . '.webp'),
+      ];
+    } catch (\Throwable $th) {
+      $errorMessage = $th->getMessage();
+      return false;
+    }
+  }
+}
+
 if (!function_exists('deleteFile')) {
   function deleteFile($filePath): bool
   {
@@ -395,18 +471,18 @@ if (!function_exists('getRequestData')) {
       case 'POST':
         if ($RequestData['Content-Type'] == "application/json" || $RequestData['Content-Type'] == "application/x-www-form-urlencoded") {
           if ($returnDataFormat == 'ARRAY') {
-            return (empty($RequestData['post']))? $RequestData['JsonArray'] : $RequestData['post'];
+            return (empty($RequestData['post'])) ? $RequestData['JsonArray'] : $RequestData['post'];
           }
           if ($returnDataFormat == 'OBJECT') {
-            return (object) (empty($RequestData['post']))? $RequestData['JsonArray'] : $RequestData['post'];
+            return (object) (empty($RequestData['post'])) ? $RequestData['JsonArray'] : $RequestData['post'];
           }
         }
         if (substr_count($RequestData['Content-Type'], 'multipart')) {
           if ($returnDataFormat == 'ARRAY') {
-            return array_merge(['_files'=>$RequestData['UploadFilesObject']],$RequestData['UploadFilesArray'], $RequestData['post']);
+            return array_merge(['_files' => $RequestData['UploadFilesObject']], $RequestData['UploadFilesArray'], $RequestData['post']);
           }
           if ($returnDataFormat == 'OBJECT') {
-            return (object) array_merge(['_files'=>$RequestData['UploadFilesObject']],$RequestData['UploadFilesArray'], $RequestData['post']);
+            return (object) array_merge(['_files' => $RequestData['UploadFilesObject']], $RequestData['UploadFilesArray'], $RequestData['post']);
           }
         } else {
           if ($returnDataFormat == 'ARRAY') {
@@ -884,6 +960,16 @@ if (!function_exists('CheckRoleWiseMenuAccess')) {
       } else {
         return false;
       }
+    }
+  }
+}
+if (!function_exists('checkJwtTokenDecode')) {
+  function checkJwtTokenDecode(string $token, string $jwtKey, string $enc_type = 'HS256')
+  {
+    try {
+      return (array) \Firebase\JWT\JWT::decode($token, new \Firebase\JWT\Key($jwtKey, $enc_type));
+    } catch (\Throwable $th) {
+      return null;
     }
   }
 }

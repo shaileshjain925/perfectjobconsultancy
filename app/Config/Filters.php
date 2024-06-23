@@ -2,9 +2,10 @@
 
 namespace Config;
 
-use App\Filters\AdminApiAuth;
-use App\Filters\AdminAuth;
-use App\Filters\EcommerceApiAuth;
+
+use App\Filters\AdminApiAuthFilter;
+use App\Filters\AdminAuthFilter;
+use App\Filters\EcommerceApiAuthFilter;
 use CodeIgniter\Config\Filters as BaseFilters;
 use CodeIgniter\Filters\Cors;
 use CodeIgniter\Filters\CSRF;
@@ -37,9 +38,9 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
-        'AdminAuth' => AdminAuth::class,
-        'AdminApiAuth' => AdminApiAuth::class,
-        'EcommerceApiAuth' => EcommerceApiAuth::class,
+        'AdminAuthFilter' => AdminAuthFilter::class,
+        'AdminApiAuthFilter' => AdminApiAuthFilter::class,
+        'EcommerceApiAuthFilter' => EcommerceApiAuthFilter::class,
     ];
 
     /**

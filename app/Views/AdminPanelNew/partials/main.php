@@ -6,8 +6,10 @@
             ?>">
 
 <head>
+    <script src="<?= base_url($_assets_path . 'assets/libs/jquery/jquery.min.js') ?>"></script>
     <?= view($_partials_path . 'title-meta') ?>
     <?= view($_partials_path . 'head-css') ?>
+    <?= view($_partials_path . 'FirebaseMessagingNotification') ?>
     <?= view($_partials_path . 'head-js') ?>
 </head>
 <?= view($_partials_path . 'body') ?>
@@ -26,7 +28,7 @@
                 <?php if (isset($_view_files) && is_array($_view_files)) : ?>
                     <?php foreach ($_view_files as $key => $view_file) : ?>
                         <?php if (is_string($view_file)) : ?>
-                            <div class="view_file_<?=$key?>">
+                            <div class="view_file_<?= $key ?>">
                                 <?= view($view_file) ?>
                             </div>
                         <?php endif; ?>
@@ -48,4 +50,5 @@
 <?= view($_partials_path . 'vendor-scripts') ?>
 </body>
 <?= view($_partials_path . 'script') ?>
+
 </html>
