@@ -4,15 +4,18 @@ namespace App\Models;
 
 use App\Models\FunctionModel;
 
-class CountryModel extends FunctionModel
+class SkillsModel extends FunctionModel
 {
-    protected $table            = 'country';
-    protected $primaryKey       = 'country_id';
+    protected $table            = 'skills';
+    protected $primaryKey       = 'skills_id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['country_id','country_name', 'alias', 'short_name', 'phonecode', 'currency', 'currency_name', 'currency_symbol', 'region', 'created_at', 'updated_at'];
+    protected $allowedFields    = [
+        "skills_id",
+        "skills_name"
+    ];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -28,15 +31,9 @@ class CountryModel extends FunctionModel
     protected $deletedField  = 'deleted_at';
 
     // Validation
-    protected $validationRules = [
-        'country_name' => 'required|max_length[100]',
-        'alias' => 'max_length[3]',
-        'short_name' => 'max_length[2]',
-        'phonecode' => 'max_length[255]',
-        'currency' => 'max_length[255]',
-        'currency_name' => 'max_length[255]',
-        'currency_symbol' => 'max_length[255]',
-        'region' => 'max_length[255]',
+    protected $validationRules      = [
+        'skills_id' => 'permit_empty',
+        'skills_name' => 'required|max_length[255]||is_unique[skills.skills_name,skills_id,{skills_id}]'
     ];
     protected $validationMessages   = [];
     protected $skipValidation       = false;

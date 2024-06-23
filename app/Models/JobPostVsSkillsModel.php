@@ -4,15 +4,19 @@ namespace App\Models;
 
 use App\Models\FunctionModel;
 
-class CountryModel extends FunctionModel
+class JobPostVsSkillsModel extends FunctionModel
 {
-    protected $table            = 'country';
-    protected $primaryKey       = 'country_id';
+    protected $table            = 'job_post_vs_skills';
+    protected $primaryKey       = 'job_post_vs_skills_id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['country_id','country_name', 'alias', 'short_name', 'phonecode', 'currency', 'currency_name', 'currency_symbol', 'region', 'created_at', 'updated_at'];
+    protected $allowedFields    = [
+        "job_post_vs_skills_id",
+        "job_post_id",
+        "skills_id"
+    ];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -28,15 +32,10 @@ class CountryModel extends FunctionModel
     protected $deletedField  = 'deleted_at';
 
     // Validation
-    protected $validationRules = [
-        'country_name' => 'required|max_length[100]',
-        'alias' => 'max_length[3]',
-        'short_name' => 'max_length[2]',
-        'phonecode' => 'max_length[255]',
-        'currency' => 'max_length[255]',
-        'currency_name' => 'max_length[255]',
-        'currency_symbol' => 'max_length[255]',
-        'region' => 'max_length[255]',
+    protected $validationRules      = [
+        'job_post_vs_skills_id' => 'permit_empty',
+        'job_post_id' => 'required|max_length[11]|is_not_unique[job_post.job_post_id]',
+        'skills_id' => 'permit_empty|is_not_unique[skills.skills_id]'
     ];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
@@ -52,4 +51,10 @@ class CountryModel extends FunctionModel
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+    public function __construct()
+    {
+        parent::__construct();
+        $this->addParentJoin("job_post_id", $this->getJobPostModel(), "left", ['job_title']);
+        $this->addParentJoin("skills_id", $this->getSkillsModel(), "left", ['skills_name']);
+    }
 }

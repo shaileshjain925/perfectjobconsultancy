@@ -34,7 +34,7 @@ class UserModel extends FunctionModel
         'mobile' => 'required|max_length[15]|is_unique[user.mobile,user_id,{user_id}]',
         'password' => 'required|max_length[255]',
         'otp' => 'permit_empty|max_length[6]',
-        'user_type' => 'required|in_list[admin,purchase,finance,order,delivery,stock]',
+        'user_type' => 'required|in_list[admin,recruiter,candidate]',
         'is_active' => 'in_list[0,1]'
     ];
 

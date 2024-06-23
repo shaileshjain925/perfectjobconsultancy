@@ -30,17 +30,12 @@ class StateModel extends FunctionModel
     // Validation
     protected $validationRules = [
         'state_id' => 'permit_empty',
-        'state_name' => 'required|max_length[255]|is_unique[state_name,state_id,{state_id}]',
+        'state_name' => 'required|max_length[255]',
         'state_code' => 'max_length[3]',
         'country_id' => 'required|is_not_unique[country.country_id]',
         'short_name' => 'max_length[255]',
     ];
-    protected $validationMessages   = [
-        "state_name"=>[
-            "required" => "State Name Required",
-            "is_unique" => "Name Already Exiest",
-        ]
-    ];
+    protected $validationMessages   = [];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
     // Callbacks
@@ -53,10 +48,9 @@ class StateModel extends FunctionModel
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
-    protected $messageAlias = "State";
     public function __construct()
     {
         parent::__construct();
-        $this->addParentJoin('country_id',$this->getCountryModel(),'left',['country_name','phonecode as "country_code"']);
+        $this->addParentJoin('country_id',$this->getCountryModel(),'left',['country_name','phonecode as "country code"']);
     }
 }
