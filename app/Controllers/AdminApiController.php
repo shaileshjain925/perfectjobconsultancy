@@ -84,40 +84,7 @@ class AdminApiController extends BaseController
             return formatApiResponse($this->request, $this->response, ApiResponseStatusCode::BAD_REQUEST, $e->getMessage(), []);
         }
     }
-    // Firebase Messaging Notification ---------------------------------------------------------------------------------------------------------
-    /**
-     *  {"firebase_messaging_integration_id":"","apiKey":"","authDomain":"","projectId":"","storageBucket":"","messagingSenderId":"","appId":"","serverKey":"","vapidKey":"","desktop_notification":"","mobile_notification":""}
-     */
-    public function FirebaseMessagingIntegrationCreateUpdate()
-    {
-        $data = getRequestData($this->request, 'ARRAY');
-        if (array_key_exists('firebase_messaging_integration_id', $data) && !empty($data['firebase_messaging_integration_id'])) {
-            return $this->ModelUpdate($this->getFirebaseMessagingIntegrationModel());
-        } else {
-            return $this->ModelCreate($this->getFirebaseMessagingIntegrationModel());
-        }
-    }
-    /**
-     *  {"tokens":[],"title":"required","body":"required","image":"permit_empty","url":"required"}
-     */
-    public function SendNotification()
-    {
-        $data = getRequestData($this->request, 'ARRAY');
-        $validation = \Config\Services::validation();
-        $validation->setRules([
-            'tokens' => 'required',
-            'title' => 'required',
-            'body' => 'required',
-            'image' => 'permit_empty',
-            'url' => 'required',
-        ]);
-        if (!$validation->run($data)) {
-            return formatApiResponse($this->request, $this->response, ApiResponseStatusCode::VALIDATION_FAILED, 'Validation Failed', [], $validation->getErrors());
-        }
-        $FCM = new FirebaseMessagingController();
-        $response = $FCM->SendNotification($data['tokens'], $data['title'], $data['body'], $data['image'], ['url' => $data['url']]);
-        return formatApiResponse($this->request, $this->response, ApiResponseStatusCode::OK, "Notification Response Fetched", json_decode($response, true));
-    }
+
     // Country ---------------------------------------------------------------------------------------------------------
     /**
      * {"country_id":"required"}
@@ -293,416 +260,6 @@ class AdminApiController extends BaseController
         return $this->ModelDelete($this->getCityModel());
     }
 
-    // Brand -------------------------------------------------------------------------------------------------------
-
-    /** 
-     * Get a single brand by ID
-     * 
-     * @return mixed
-     */
-    public function BrandGet()
-    {
-        return $this->ModelGet($this->getBrandModel());
-    }
-
-    /** 
-     * Get a list of all brands
-     * 
-     * @return mixed
-     */
-    public function BrandList()
-    {
-        return $this->ModelList($this->getBrandModel());
-    }
-
-    /** 
-     * Create a new brand
-     * 
-     * @return mixed
-     */
-    public function BrandCreate()
-    {
-        return $this->ModelCreate($this->getBrandModel());
-    }
-
-    /** 
-     * Update an existing brand
-     * 
-     * @return mixed
-     */
-    public function BrandUpdate()
-    {
-        return $this->ModelUpdate($this->getBrandModel());
-    }
-
-    /** 
-     * Delete an existing brand
-     * 
-     * @return mixed
-     */
-    public function BrandDelete()
-    {
-        return $this->ModelDelete($this->getBrandModel());
-    }
-
-    // CategoryType -------------------------------------------------------------------------------------------------------
-
-    /** 
-     * Get a single category type by ID
-     * 
-     * @return mixed
-     */
-    public function CategoryTypeGet()
-    {
-        return $this->ModelGet($this->getCategoryTypeModel());
-    }
-
-    /** 
-     * Get a list of all category types
-     * 
-     * @return mixed
-     */
-    public function CategoryTypeList()
-    {
-        return $this->ModelList($this->getCategoryTypeModel());
-    }
-
-    /** 
-     * Create a new category type
-     * 
-     * @return mixed
-     */
-    public function CategoryTypeCreate()
-    {
-        return $this->ModelCreate($this->getCategoryTypeModel());
-    }
-
-    /** 
-     * Update an existing category type
-     * 
-     * @return mixed
-     */
-    public function CategoryTypeUpdate()
-    {
-        return $this->ModelUpdate($this->getCategoryTypeModel());
-    }
-
-    /** 
-     * Delete an existing category type
-     * 
-     * @return mixed
-     */
-    public function CategoryTypeDelete()
-    {
-        return $this->ModelDelete($this->getCategoryTypeModel());
-    }
-
-    // Category -------------------------------------------------------------------------------------------------------
-
-    /** 
-     * Get a single category by ID
-     * 
-     * @return mixed
-     */
-    public function CategoryGet()
-    {
-        return $this->ModelGet($this->getCategoryModel());
-    }
-
-    /** 
-     * Get a list of all categories
-     * 
-     * @return mixed
-     */
-    public function CategoryList()
-    {
-        return $this->ModelList($this->getCategoryModel());
-    }
-
-    /** 
-     * Create a new category
-     * 
-     * @return mixed
-     */
-    public function CategoryCreate()
-    {
-        return $this->ModelCreate($this->getCategoryModel());
-    }
-
-    /** 
-     * Update an existing category
-     * 
-     * @return mixed
-     */
-    public function CategoryUpdate()
-    {
-        return $this->ModelUpdate($this->getCategoryModel());
-    }
-
-    /** 
-     * Delete an existing category
-     * 
-     * @return mixed
-     */
-    public function CategoryDelete()
-    {
-        return $this->ModelDelete($this->getCategoryModel());
-    }
-
-    // Fabric -------------------------------------------------------------------------------------------------------
-
-    /** 
-     * Get a single fabric by ID
-     * 
-     * @return mixed
-     */
-    public function fabricGet()
-    {
-        return $this->ModelGet($this->getCategoryModel()); // This should be getFabricModel() instead of getCategoryModel()
-    }
-
-    /** 
-     * Get a list of all fabrics
-     * 
-     * @return mixed
-     */
-    public function fabricList()
-    {
-        return $this->ModelList($this->getFabricModel());
-    }
-
-    /** 
-     * Create a new fabric
-     * 
-     * @return mixed
-     */
-    public function fabricCreate()
-    {
-        return $this->ModelCreate($this->getFabricModel());
-    }
-
-    /** 
-     * Update an existing fabric
-     * 
-     * @return mixed
-     */
-    public function fabricUpdate()
-    {
-        return $this->ModelUpdate($this->getFabricModel());
-    }
-
-    /** 
-     * Delete an existing fabric
-     * 
-     * @return mixed
-     */
-    public function fabricDelete()
-    {
-        return $this->ModelDelete($this->getFabricModel());
-    }
-
-    // Pattern -------------------------------------------------------------------------------------------------------
-
-    /** 
-     * Get a single pattern by ID
-     * 
-     * @return mixed
-     */
-    public function AddPatternGet()
-    {
-        return $this->ModelGet($this->getPatternModel());
-    }
-
-    /** 
-     * Get a list of all patterns
-     * 
-     * @return mixed
-     */
-    public function AddPatternList()
-    {
-        return $this->ModelList($this->getPatternModel());
-    }
-
-    /** 
-     * Create a new pattern
-     * 
-     * @return mixed
-     */
-    public function AddPatternCreate()
-    {
-        return $this->ModelCreate($this->getPatternModel());
-    }
-
-    /** 
-     * Update an existing pattern
-     * 
-     * @return mixed
-     */
-    public function AddPatternUpdate()
-    {
-        return $this->ModelUpdate($this->getPatternModel());
-    }
-
-    /** 
-     * Delete an existing pattern
-     * 
-     * @return mixed
-     */
-    public function AddPatternDelete()
-    {
-        return $this->ModelDelete($this->getPatternModel());
-    }
-
-    // Product -------------------------------------------------------------------------------------------------------
-
-    /** 
-     * Get a single product by ID
-     * 
-     * @return mixed
-     */
-    public function productGet()
-    {
-        return $this->ModelGet($this->getProductModel());
-    }
-
-    /** 
-     * Get a list of all products
-     * 
-     * @return mixed
-     */
-    public function productList()
-    {
-        return $this->ModelList($this->getProductModel());
-    }
-
-    /** 
-     * Create a new product
-     * 
-     * @return mixed
-     */
-    public function productCreate()
-    {
-        return $this->ModelCreate($this->getProductModel());
-    }
-
-    /** 
-     * Update an existing product
-     * 
-     * @return mixed
-     */
-    public function productUpdate()
-    {
-        return $this->ModelUpdate($this->getProductModel());
-    }
-
-    /** 
-     * Delete an existing product
-     * 
-     * @return mixed
-     */
-    public function productDelete()
-    {
-        return $this->ModelDelete($this->getProductModel());
-    }
-
-    // Variant -------------------------------------------------------------------------------------------------------
-
-    /** 
-     * Get a single product variant by ID
-     * 
-     * @return mixed
-     */
-    public function variantGet()
-    {
-        return $this->ModelGet($this->getProductVariantModel());
-    }
-
-    /** 
-     * Get a list of all product variants
-     * 
-     * @return mixed
-     */
-    public function variantList()
-    {
-        return $this->ModelList($this->getProductVariantModel());
-    }
-    public function variantCreate()
-    {
-        $result = $this->ModelCreate($this->getProductVariantModel());
-        return $result;
-    }
-    public function variantUpdate()
-    {
-        $result = $this->ModelUpdate($this->getProductVariantModel());
-        $this->getSizeVsVariantModel()->where('variant_id', $_POST['variant_id'])->delete();
-        if (isset($_POST['sizes']) && is_array($_POST['sizes'])) {
-            foreach ($_POST['sizes'] as $key => $size) {
-                $size_row = [
-                    'variant_id' => $_POST['variant_id'],
-                    'size_id' => $size
-                ];
-                $this->getSizeVsVariantModel()->insert($size_row);
-            }
-        }
-        return $result;
-    }
-    public function variantDelete()
-    {
-        return $this->ModelDelete($this->getProductVariantModel());
-    }
-    public function calculate_variant()
-    {
-        $data = getRequestData($this->request, 'ARRAY');
-        $result = $this->getProductVariantModel()->calculate_variant(['data' => $data]);
-        return formatApiResponse($this->request, $this->response, ApiResponseStatusCode::OK, 'Calculated Successfull', $result['data']);
-    }
-
-
-    public function sizeGet()
-    {
-        return $this->ModelGet($this->getSizeModel());
-    }
-
-    public function sizeList()
-    {
-        return $this->ModelList($this->getSizeModel());
-    }
-
-    public function sizeCreate()
-    {
-        return $this->ModelCreate($this->getSizeModel());
-    }
-    public function sizeUpdate()
-    {
-        return $this->ModelUpdate($this->getSizeModel());
-    }
-    public function sizeDelete()
-    {
-        return $this->ModelDelete($this->getSizeModel());
-    }
-
-    public function unitGet()
-    {
-        return $this->ModelGet($this->getUnitModel());
-    }
-
-    public function unitList()
-    {
-        return $this->ModelList($this->getUnitModel());
-    }
-
-    public function unitCreate()
-    {
-        return $this->ModelCreate($this->getUnitModel());
-    }
-    public function unitUpdate()
-    {
-        return $this->ModelUpdate($this->getUnitModel());
-    }
-    public function unitDelete()
-    {
-        return $this->ModelDelete($this->getUnitModel());
-    }
     // User Login  ------------------------------------------------------------------------------------
     /** 
      * {
@@ -841,16 +398,16 @@ class AdminApiController extends BaseController
             }
 
             // Send OTP to user via email or mobile
-            $result2 = $this->getEmailController()->UserForgetPasswordSendOtp($update_data['otp'], $result['email'], $result['fullname']);
+            // $result2 = $this->getEmailController()->UserForgetPasswordSendOtp($update_data['otp'], $result['email'], $result['fullname']);
 
             // If sending OTP fails, return corresponding response
-            if ($result2['status'] != ApiResponseStatusCode::OK) {
-                return formatApiAutoResponse(
-                    $this->request,
-                    $this->response,
-                    $result2
-                );
-            }
+            // if ($result2['status'] != ApiResponseStatusCode::OK) {
+            //     return formatApiAutoResponse(
+            //         $this->request,
+            //         $this->response,
+            //         $result2
+            //     );
+            // }
 
             // Return success response after successful OTP send
             return formatApiResponse(
@@ -992,143 +549,193 @@ class AdminApiController extends BaseController
     {
         return $this->ModelDelete($this->getUserModel());
     }
-    // MediaManagement  -------------------------------------------------------------------------------------------------------
-    public function UploadMediaToServer()
-    {
-        try {
-            $fileObjectArray = $_FILES;
-            $fileProperty = getRequestData($this->request, 'ARRAY');
-            $validation = \Config\Services::validation();
-            $validation->setRules([
-                'module_name' => 'required|in_list[' . implode(',', array_column(MediaModuleType::cases(), 'value')) . ']',
-                'uploader_id' => 'required',
-                'media_visibility' => 'required|in_list[public,private]'
-            ]);
-            if (!$validation->run($fileProperty)) {
-                return formatApiResponse($this->request, $this->response, ApiResponseStatusCode::VALIDATION_FAILED, "Validation 1 Failed", [], $validation->getErrors());
-            }
-            $validation->setRules([
-                'file' => 'required',
-            ]);
-            if (!$validation->run($fileObjectArray)) {
-                return formatApiResponse($this->request, $this->response, ApiResponseStatusCode::VALIDATION_FAILED, "Validation 2 Failed", [], $validation->getErrors());
-            }
-            $fileObject = $fileObjectArray['file'];
-            $validateResult = $this->FilesValidate($fileObject, $fileProperty['module_name']);
-            if ($validateResult['status'] == false) {
-                return formatApiResponse($this->request, $this->response, ApiResponseStatusCode::VALIDATION_FAILED, "Validation 3 Failed", [], $validateResult['errors']);
-            }
-            // if Upload files is Validate
-            if ($validateResult['status'] === true) {
-                $mmm = $this->getMediaManagementModel();
-                $errors = [];
-                $files = [];
-                $files = array_map(
-                    fn ($file) => $mmm->uploadFileToPath($file, $fileProperty, $errors),
-                    $validateResult['files']
-                );
-                if (!empty($errors)) {
-                    return formatApiResponse($this->request, $this->response, ApiResponseStatusCode::BAD_REQUEST,  'File Uploaded Failed', $errors);
-                }
-                return formatApiResponse($this->request, $this->response, ApiResponseStatusCode::OK,  'File Uploaded Successfully', $files);
-            }
-        } catch (Exception $e) {
-            log_message('error', $e->getMessage());
-            return formatApiResponse($this->request, $this->response, ApiResponseStatusCode::BAD_REQUEST,  $e->getMessage());
-        }
-    }
-    public function UpdateMediaProperty()
-    {
-        try {
-            $fileProperty = getRequestData($this->request, 'ARRAY');
-            $validation = \Config\Services::validation();
-            $validation->setRules([
-                'uploader_id' => 'required',
-                'media_id' => 'required',
-                'record_id' => 'required'
-            ]);
-            if (!$validation->run($fileProperty)) {
-                return formatApiResponse($this->request, $this->response, ApiResponseStatusCode::VALIDATION_FAILED, "Validation 1 Failed", [], $validation->getErrors());
-            }
-            $result = $this->getMediaManagementModel()->find($fileProperty['media_id']);
-            if (empty($result)) {
-                return formatApiResponse($this->request, $this->response, ApiResponseStatusCode::VALIDATION_FAILED, "Invalid Media ID");
-            }
-            $fileProperty['module_name'] = $result['module_name'];
-            if (array_key_exists('is_featured', $fileProperty) && $fileProperty['is_featured'] == 1) {
-                $this->UpdateMediaIsFeatureToFalse($fileProperty['record_id']);
-            }
-            $this->getMediaManagementModel()->save($fileProperty);
-            return formatApiResponse($this->request, $this->response, ApiResponseStatusCode::OK,  'File Property Uploaded Successfully');
-        } catch (Exception $e) {
-            log_message('error', $e->getMessage());
-            return formatApiResponse($this->request, $this->response, ApiResponseStatusCode::BAD_REQUEST,  $e->getMessage());
-        }
-    }
-    protected function UpdateMediaIsFeatureToFalse(string $record_id)
-    {
-        $dataToUpdate = [
-            ['is_featured' => 0, 'record_id' => $record_id]
-        ];
 
-        $this->getMediaManagementModel()
-            ->updateBatch($dataToUpdate, 'record_id');
+    public function RecruiterProfileGet()
+    {
+        return $this->ModelGet($this->getRecruiterProfileModel());
     }
-    public function GetMediaList()
+    /** */
+    public function RecruiterProfileList()
+    {
+        return $this->ModelList($this->getRecruiterProfileModel());
+    }
+    /** */
+    public function RecruiterProfileCreate()
+    {
+        return $this->ModelCreate($this->getRecruiterProfileModel());
+    }
+    /** */
+    public function RecruiterProfileUpdate()
+    {
+        return $this->ModelUpdate($this->getRecruiterProfileModel());
+    }
+    /** */
+    public function RecruiterProfileDelete()
+    {
+        return $this->ModelDelete($this->getRecruiterProfileModel());
+    }
+    /** */
+    public function RecruiterListWithProfileDetails()
     {
         try {
-            $data = getRequestData($this->request, 'ARRAY');
-            $validation = \Config\Services::validation();
-            $validation->setRules([
-                'module_name' => 'required|in_list[' . implode(',', array_column(MediaModuleType::cases(), 'value')) . ']',
-            ]);
-            if (!$validation->run($data)) {
-                return formatApiResponse($this->request, $this->response, ApiResponseStatusCode::VALIDATION_FAILED, "Validation 1 Failed", [], $validation->getErrors());
-            }
-            $result = $this->getMediaManagementModel()
-                ->select("concat('" . base_url() . "/',media_path,'/',media_filename,'.',media_file_extension) as image_url")
-                ->select("concat('" . base_url() . "/',thumbnail_path,'/',media_filename,'.',media_file_extension) as thumb_image_url")
-                ->select("alt_text,media_text_content,is_featured,redirect_url")
-                ->where('module_name', $data['module_name'])
-                ->where('media_visibility', 'public')
-                ->orderBy('media_sequence', 'ASC')->findAll();
-            return formatApiResponse($this->request, $this->response, ApiResponseStatusCode::OK,  'Media List Fetched Successfully', $result);
+            $filter = getRequestData($this->request, 'ARRAY') ?? [];
+            $result = $this->getUserModel()->RecruiterListWithProfileDetails($filter);
+            return formatApiAutoResponse($this->request, $this->response, $result);
         } catch (Exception $e) {
-            log_message('error', $e->getMessage());
-            return formatApiResponse($this->request, $this->response, ApiResponseStatusCode::BAD_REQUEST,  $e->getMessage());
+            return formatApiResponse($this->request, $this->response, ApiResponseStatusCode::BAD_REQUEST, $e->getMessage(), []);
         }
     }
-    protected function FilesValidate($fileObject, string $moduleName): array
-    {
-        $keys = array_keys($fileObject);
-        $multifile = is_array($fileObject[$keys[0]]);
-        $mmm = $this->getMediaManagementModel();
-        $ModuleProperty = $mmm->getMediaModuleProperty($moduleName);
-        $files = ($multifile == true) ? [] : [0 => $fileObject];
-        // checking single file or multi files
-        if (is_array($fileObject[$keys[0]])) {
-            // If multiple files, run the loop
-            foreach ($fileObject[$keys[0]] as $index => $value) {
-                $files[$index] = [];
 
-                // Dynamically assign keys based on the original array keys
-                foreach ($keys as $key) {
-                    $files[$index][$key] = $fileObject[$key][$index];
-                }
-            }
-        }
-        // Validating each file and returning errors if any.
-        $errors = [];
-        ($ModuleProperty['maxUploadLimit'] > 0 && count($files) > $ModuleProperty['maxUploadLimit']) ? $errors['maxUploadCount'] = "Max File Upload Count " . $ModuleProperty['maxUploadLimit'] : '';
-        foreach ($files as $key => $file) {
-            ($this->FileTypeValidate($file, $ModuleProperty['fileTypeAllowed'])) ? '' : $errors['fileType'][] = "(" . $file['name'] . ") Invalid File Type. Allowed Only [" . implode(', ', $ModuleProperty["fileTypeAllowed"]) . "]";
-            ($this->FileSizeValidate($file, $ModuleProperty['maxFileSizeKb'])) ? '' : $errors['fileSize'][] = "(" . $file['name'] . ") Invalid File Size(" . ($file['size'] / 1024) . "KB). Allowed Maximum Size Only :" . $ModuleProperty['maxFileSizeKb'] . "KB";
-        }
-        if (!empty($errors)) {
-            return ['status' => false, 'errors' => $errors];
-        }
-        return ['status' => true, 'files' => $files];
+    public function CandidateProfileGet()
+    {
+        return $this->ModelGet($this->getCandidateProfileModel());
     }
+    /** */
+    public function CandidateProfileList()
+    {
+        return $this->ModelList($this->getCandidateProfileModel());
+    }
+    /** */
+    public function CandidateProfileCreate()
+    {
+        return $this->ModelCreate($this->getCandidateProfileModel());
+    }
+    /** */
+    public function CandidateProfileUpdate()
+    {
+        return $this->ModelUpdate($this->getCandidateProfileModel());
+    }
+    /** */
+    public function CandidateProfileDelete()
+    {
+        return $this->ModelDelete($this->getCandidateProfileModel());
+    }
+
+    public function JobPositionGet()
+    {
+        return $this->ModelGet($this->getJobPositionModel());
+    }
+    /** */
+    public function JobPositionList()
+    {
+        return $this->ModelList($this->getJobPositionModel());
+    }
+    /** */
+    public function JobPositionCreate()
+    {
+        return $this->ModelCreate($this->getJobPositionModel());
+    }
+    /** */
+    public function JobPositionUpdate()
+    {
+        return $this->ModelUpdate($this->getJobPositionModel());
+    }
+    /** */
+    public function JobPositionDelete()
+    {
+        return $this->ModelDelete($this->getJobPositionModel());
+    }
+
+
+    public function JobPostGet()
+    {
+        return $this->ModelGet($this->getJobPostModel());
+    }
+    /** */
+    public function JobPostList()
+    {
+        return $this->ModelList($this->getJobPostModel());
+    }
+    /** */
+    public function JobPostCreate()
+    {
+        return $this->ModelCreate($this->getJobPostModel());
+    }
+    /** */
+    public function JobPostUpdate()
+    {
+        return $this->ModelUpdate($this->getJobPostModel());
+    }
+    public function JobPostDelete()
+    {
+        return $this->ModelDelete($this->getJobPostModel());
+    }
+    /** */
+    public function JobPostVsSkillsGet()
+    {
+        return $this->ModelGet($this->getJobPostVsSkillsModel());
+    }
+    /** */
+    public function JobPostVsSkillsList()
+    {
+        return $this->ModelList($this->getJobPostVsSkillsModel());
+    }
+    /** */
+    public function JobPostVsSkillsCreate()
+    {
+        return $this->ModelCreate($this->getJobPostVsSkillsModel());
+    }
+    /** */
+    public function JobPostVsSkillsUpdate()
+    {
+        return $this->ModelUpdate($this->getJobPostVsSkillsModel());
+    }
+    /** */
+    public function JobPostVsSkillsDelete()
+    {
+        return $this->ModelDelete($this->getJobPostVsSkillsModel());
+    }
+    /** */
+    public function JobTypeGet()
+    {
+        return $this->ModelGet($this->getJobTypeModel());
+    }
+    /** */
+    public function JobTypeList()
+    {
+        return $this->ModelList($this->getJobTypeModel());
+    }
+    /** */
+    public function JobTypeCreate()
+    {
+        return $this->ModelCreate($this->getJobTypeModel());
+    }
+    /** */
+    public function JobTypeUpdate()
+    {
+        return $this->ModelUpdate($this->getJobTypeModel());
+    }
+    /** */
+    public function JobTypeDelete()
+    {
+        return $this->ModelDelete($this->getJobTypeModel());
+    }
+    /** */
+    public function SkillsGet()
+    {
+        return $this->ModelGet($this->getSkillsModel());
+    }
+    /** */
+    public function SkillsList()
+    {
+        return $this->ModelList($this->getSkillsModel());
+    }
+    /** */
+    public function SkillsCreate()
+    {
+        return $this->ModelCreate($this->getSkillsModel());
+    }
+    /** */
+    public function SkillsUpdate()
+    {
+        return $this->ModelUpdate($this->getSkillsModel());
+    }
+    /** */
+    public function SkillsDelete()
+    {
+        return $this->ModelDelete($this->getSkillsModel());
+    }
+
     protected function FileTypeValidate($fileObject, $allowedFileTypeArray): bool
     {
         $fileType = $fileObject['type'];

@@ -1,5 +1,5 @@
 <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="AddRoleLabel">
+    <h5 class="offcanvas-title" id="RightSlideBox">
         <?= (isset($size_id) && !empty($size_id)) ? "Update" : "Add" ?> Size</h5>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 </div>

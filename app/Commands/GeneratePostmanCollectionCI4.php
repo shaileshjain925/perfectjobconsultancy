@@ -30,7 +30,7 @@ class GeneratePostmanCollectionCI4 extends BaseCommand
             'default' => 'postman_collection.json',
         ],
     ];
-    // php spark postman:generate --collectionname HansaHandloom --baseUrlVariable api_url --filename mycollection.json
+    // php spark postman:generate --collectionname PerfectJobConsultancy --baseUrlVariable api_url --filename mycollection.json
     public function run(array $params)
     {
         try {

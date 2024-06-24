@@ -1,6 +1,6 @@
 <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="AddRoleLabel"><?= (isset($user_id) && !empty($user_id)) ? "Update" : "Add" ?> Role User</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    <h5 class="offcanvas-title" id="RightSlideBox"><?= (isset($user_id) && !empty($user_id)) ? "Update" : "Add" ?> <?=@$user_type_name?></h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" onclick='$("#RightSlideBox").html("");'></button>
 </div>
 <div class="offcanvas-body">
     <div class="error-message-box d-none">
@@ -11,9 +11,10 @@
     </div>
     <form id="form" method="POST" enctype="multipart/form-data" action="<?= @$ApiUrl ?>">
         <input type="hidden" name="user_id" id="user_id" value="<?= @$user_id ?>">
+        <input type="hidden" name="user_type" id="user_type" value="<?= @$user_type ?>">
         <div class="mb-3">
-            <label class="form-label">Employee Name</label>
-            <input type="text" id="fullname" name="fullname" class="form-control" placeholder="Employee Name" value="<?= @$fullname ?>">
+            <label class="form-label">Name</label>
+            <input type="text" id="fullname" name="fullname" class="form-control" placeholder="Name" value="<?= @$fullname ?>">
             <span class="error-message" id="error-fullname"></span>
         </div>
 
@@ -32,19 +33,6 @@
             <label class="form-label">Password</label>
             <input type="password" name="password" id="password" class="form-control" placeholder="Enter Password" />
             <span class="error-message" id="error-password"></span>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">User Role</label>
-            <select name="user_type" id="user_type" placeholder="Select Role">
-                <option value="admin" <?= (isset($user_type) && !empty($user_type) && $user_type == "admin") ? "selected" : "" ?>> Admin</option>
-                <option value="purchase" <?= (isset($user_type) && !empty($user_type) && $user_type == "purchase") ? "selected" : "" ?>> Purchase</option>
-                <option value="finance" <?= (isset($user_type) && !empty($user_type) && $user_type == "finance") ? "selected" : "" ?>> Finance</option>
-                <option value="order" <?= (isset($user_type) && !empty($user_type) && $user_type == "order") ? "selected" : "" ?>> Order</option>
-                <option value="delivery" <?= (isset($user_type) && !empty($user_type) && $user_type == "delivery") ? "selected" : "" ?>> Delivery</option>
-                <option value="stock" <?= (isset($user_type) && !empty($user_type) && $user_type == "stock") ? "selected" : "" ?>> Stock</option>
-            </select>
-            <span class="error-message" id="error-user_type"></span>
         </div>
 
         <div class="mb-3">

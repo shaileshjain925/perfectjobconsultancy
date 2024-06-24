@@ -947,22 +947,6 @@ if (!function_exists('getCompanyDatabaseRecord')) {
     // ] : [];
   }
 }
-if (!function_exists('CheckRoleWiseMenuAccess')) {
-  function CheckRoleWiseMenuAccess(int $role_id, int $menu_id, MenuActionType $action_type): bool
-  {
-    $RoleMenuAccessRightsModel = model('RoleMenuAccessRightsModel');
-    $result = $RoleMenuAccessRightsModel->select($action_type->value)->where('role_id', $role_id)->where('menu_id', $menu_id)->first();
-    if (empty($result)) {
-      return true;
-    } else {
-      if ($result[$action_type->value] == '1') {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  }
-}
 if (!function_exists('checkJwtTokenDecode')) {
   function checkJwtTokenDecode(string $token, string $jwtKey, string $enc_type = 'HS256')
   {

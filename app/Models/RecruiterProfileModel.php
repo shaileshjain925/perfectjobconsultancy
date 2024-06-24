@@ -49,7 +49,7 @@ class RecruiterProfileModel extends FunctionModel
         'pincode' => 'required|max_length[6]',
         'company_phone_number' => 'required|max_length[15]',
         'company_email_address' => 'required|valid_email',
-        'user_id' =>'required|permit_empty|is_not_unique[user.user_id]',
+        'user_id' => 'required|permit_empty|is_not_unique[user.user_id]',
     ];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
@@ -65,11 +65,12 @@ class RecruiterProfileModel extends FunctionModel
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
-    public function __construct(){
+    public function __construct()
+    {
         parent::__construct();
-        $this->addParentJoin('user_id',$this->getUserModel(),'left',['user_id','fullname', 'email', 'mobile','user_type']);
-        $this->addParentJoin('country_id',$this->getCountryModel(),'left',['country_name','phonecode as "country code"']);
-        $this->addParentJoin('state_id',$this->getStateModel(),'left',['state_name','state_code']);
-        $this->addParentJoin('city_id',$this->getCityModel(),'left',['city_name']);
+        $this->addParentJoin('user_id', $this->getUserModel(), 'left', ['user_id', 'fullname', 'email', 'mobile', 'user_type']);
+        $this->addParentJoin('country_id', $this->getCountryModel(), 'left', ['country_name', 'phonecode as "country code"']);
+        $this->addParentJoin('state_id', $this->getStateModel(), 'left', ['state_name', 'state_code']);
+        $this->addParentJoin('city_id', $this->getCityModel(), 'left', ['city_name']);
     }
 }

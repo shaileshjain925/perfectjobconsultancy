@@ -66,72 +66,15 @@ if (!in_array($file_extension, $extensions)) {
         $routes->group('Dashboard', function ($routes) {
             $routes->get('/', 'AdminPageController::default_dashboard', ['as' => 'default_dashboard']);
             $routes->get('Admin', 'AdminPageController::admin_dashboard', ['as' => 'admin_dashboard']);
-            $routes->get('Purchase', 'AdminPageController::purchase_dashboard', ['as' => 'purchase_dashboard']);
-            $routes->get('Order', 'AdminPageController::order_dashboard', ['as' => 'order_dashboard']);
-            $routes->get('Financial', 'AdminPageController::finance_dashboard', ['as' => 'financial_dashboard']);
-            $routes->get('Delivery', 'AdminPageController::delivery_dashboard', ['as' => 'delivery_dashboard']);
-            $routes->get('Stock', 'AdminPageController::stock_dashboard', ['as' => 'stock_dashboard']);
+            $routes->get('Recruiter', 'AdminPageController::recruiter_dashboard', ['as' => 'recruiter_dashboard']);
+            $routes->get('Candidate', 'AdminPageController::candidate_dashboard', ['as' => 'candidate_dashboard']);
         });
         $routes->group('Admin', function ($routes) {
-            $routes->get('RoleUserList', 'AdminPageController::role_user_list', ['as' => 'role_user_list']);
-            $routes->get('UserRoleCreateUpdateComponent', 'AdminPageController::UserRoleCreateUpdateComponent', ['as' => 'UserRoleCreateUpdateComponent']);
-            $routes->get('UserRoleCreateUpdateComponent/(:num)', 'AdminPageController::UserRoleCreateUpdateComponent/$1');
-            $routes->get('BrandCreateUpdate', 'AdminPageController::BrandCreateUpdate', ['as' => 'BrandCreateUpdate']);
-            $routes->get('BrandCreateUpdate/(:num)', 'AdminPageController::BrandCreateUpdate/$1');
-            $routes->get('CategoryTypeCreateUpdate', 'AdminPageController::CategoryTypeCreateUpdate', ['as' => 'CategoryTypeCreateUpdate']);
-            $routes->get('CategoryTypeCreateUpdate/(:num)', 'AdminPageController::CategoryTypeCreateUpdate/$1');
-            $routes->get('CategoryCreateUpdate', 'AdminPageController::CategoryCreateUpdate', ['as' => 'CategoryCreateUpdate']);
-            $routes->get('CategoryCreateUpdate/(:num)', 'AdminPageController::CategoryCreateUpdate/$1');
-            $routes->get('fabricCreateUpdate', 'AdminPageController::fabricCreateUpdate', ['as' => 'fabricCreateUpdate']);
-            $routes->get('fabricCreateUpdate/(:num)', 'AdminPageController::fabricCreateUpdate/$1');
-            $routes->get('PatternCreateUpdate', 'AdminPageController::PatternCreateUpdate', ['as' => 'PatternCreateUpdate']);
-            $routes->get('PatternCreateUpdate/(:num)', 'AdminPageController::PatternCreateUpdate/$1');
-            $routes->get('sizeCreateUpdate', 'AdminPageController::sizeCreateUpdate', ['as' => 'sizeCreateUpdate']);
-            $routes->get('sizeCreateUpdate/(:num)', 'AdminPageController::sizeCreateUpdate/$1');
-
-            $routes->get('CustomerList', 'AdminPageController::customer_list', ['as' => 'customer_list']);
-            $routes->get('AddDeal', 'AdminPageController::add_deal_of_the_day', ['as' => 'add_deal_of_the_day']);
-            $routes->group('Company', function ($routes) {
-                $routes->get('CompanySetup', 'AdminPageController::company_setup', ['as' => 'company_setup']);
-                $routes->get('EcommerceSetup', 'AdminPageController::ecommerce_setup', ['as' => 'ecommerce_setup']);
-            });
-            $routes->group('Integration', function ($routes) {
-                $routes->get('Email', 'AdminPageController::email_integration', ['as' => 'email_integration']);
-                $routes->get('SMS', 'AdminPageController::sms_integration', ['as' => 'sms_integration']);
-                $routes->get('FirebaseMessagingIntegration', 'AdminPageController::FirebaseMessagingIntegration', ['as' => 'notification_integration']);
-                $routes->get('PaymentGateWay', 'AdminPageController::payment_gateway_integration', ['as' => 'payment_gateway_integration']);
-                $routes->get('OAuth2', 'AdminPageController::oauth2_integration', ['as' => 'oauth2_integration']);
-            });
-        });
-        $routes->group('Inventory', function ($routes) {
-            $routes->get('Category', 'AdminPageController::category_list', ['as' => 'category_list']);
-            $routes->get('CategoryType', 'AdminPageController::category_type_list', ['as' => 'category_type_list']);
-            $routes->get('AddBrand', 'AdminPageController::brand_list', ['as' => 'brand_list']);
-            $routes->get('Fabric', 'AdminPageController::fabric_list', ['as' => 'fabric_list']);
-            $routes->get('AddPattern', 'AdminPageController::pattern_list', ['as' => 'pattern_list']);
-            $routes->get('Size', 'AdminPageController::size_list', ['as' => 'size_list']);
-            $routes->get('ProductManage', 'AdminPageController::product_manage', ['as' => 'product_manage']);
-            $routes->get('VariantProducts/(:any)', 'AdminPageController::variant_list/$1', ['as' => 'variant_list']);
-            $routes->get('VariantCreateUpdate/(:any)', 'AdminPageController::variant_create_update/$1', ['as' => 'variant_create_update']);
-            $routes->get('VariantCreateUpdate/(:any)/(:any)', 'AdminPageController::variant_create_update/$1/$2', ['as' => 'update_variant']);
-            $routes->get('ProductCreateUpdate', 'AdminPageController::product_create_update', ['as' => 'create_product']);
-            $routes->get('ProductCreateUpdate/(:any)', 'AdminPageController::product_create_update/$1');
-            $routes->post('VariantView', 'AdminPageController::variant_view_detail', ['as' => 'VariantView']);
-        });
-        $routes->group('Orders', function ($routes) {
-            $routes->get('PlacedOrders', 'AdminPageController::placed_order', ['as' => 'placed_order']);
-            $routes->get('OrderAccepted', 'AdminPageController::order_accepted', ['as' => 'order_accepted']);
-        });
-        $routes->group('Delivery', function ($routes) {
-            $routes->get('DeliveryOrders', 'AdminPageController::delivery_orders', ['as' => 'delivery_orders']);
-            $routes->get('ShippedOrders', 'AdminPageController::order_shipped', ['as' => 'order_shipped']);
-            $routes->get('DeliverdOrders', 'AdminPageController::order_deliverd', ['as' => 'order_deliverd']);
-            $routes->get('CancelledOrders', 'AdminPageController::cancelled_order', ['as' => 'cancelled_order']);
-        });
-        $routes->group('Stock', function ($routes) {
-            $routes->get('ProductList', 'AdminPageController::products_list', ['as' => 'products_list']);
-            $routes->get('AddStock', 'AdminPageController::add_update_stock', ['as' => 'add_stock']);
-            $routes->get('StockUpdate/(:any)', 'AdminPageController::add_update_stock/$1', ['as' => 'update_stock']);
+            $routes->get('UserList', 'AdminPageController::user_list', ['as' => 'user_list']);
+            $routes->get('RecruiterList', 'AdminPageController::recruiter_list', ['as' => 'recruiter_list']);
+            $routes->get('CandidateList', 'AdminPageController::candidate_list', ['as' => 'candidate_list']);
+            $routes->post('UserCreateUpdateComponent', 'AdminPageController::UserCreateUpdateComponent', ['as' => 'UserCreateUpdateComponent']);
+            $routes->post('RecuriterProfileCreateUpdateComponent', 'AdminPageController::RecuriterProfileCreateUpdateComponent', ['as' => 'RecuriterProfileCreateUpdateComponent']);
         });
     });
     // Admin Panel Api Start -----------------------------------------------------------------------------------------------------------
@@ -173,82 +116,67 @@ if (!in_array($file_extension, $extensions)) {
                 $routes->post('Create', 'AdminApiController::UserCreate', ['as' => 'user_create_api']);
                 $routes->post('Update', 'AdminApiController::UserUpdate', ['as' => 'user_update_api']);
                 $routes->post('Delete', 'AdminApiController::UserDelete', ['as' => 'user_delete_api']);
+                $routes->post('RecruiterListWithProfileDetails', 'AdminApiController::RecruiterListWithProfileDetails', ['as' => 'RecruiterListWithProfileDetails']);
+            });
+            // RecruiterProfileGet Routes
+            $routes->group('RecruiterProfile', function ($routes) {
+                $routes->post('Get', 'AdminApiController::RecruiterProfileGet');
+                $routes->post('List', 'AdminApiController::RecruiterProfileList', ['as' => 'recruiter_profile_list_api']);
+                $routes->post('Create', 'AdminApiController::RecruiterProfileCreate', ['as' => 'recruiter_profile_create_api']);
+                $routes->post('Update', 'AdminApiController::RecruiterProfileUpdate', ['as' => 'recruiter_profile_update_api']);
+                $routes->post('Delete', 'AdminApiController::RecruiterProfileDelete', ['as' => 'recruiter_profile_delete_api']);
+            });
+            // CandidateProfileGet Routes
+            $routes->group('CandidateProfile', function ($routes) {
+                $routes->post('Get', 'AdminApiController::CandidateProfileGet');
+                $routes->post('List', 'AdminApiController::CandidateProfileList', ['as' => 'candidate_profile_list_api']);
+                $routes->post('Create', 'AdminApiController::CandidateProfileCreate', ['as' => 'candidate_profile_create_api']);
+                $routes->post('Update', 'AdminApiController::CandidateProfileUpdate', ['as' => 'candidate_profile_update_api']);
+                $routes->post('Delete', 'AdminApiController::CandidateProfileDelete', ['as' => 'candidate_profile_delete_api']);
+            });
+            // JobPositionGet Routes
+            $routes->group('JobPosition', function ($routes) {
+                $routes->post('Get', 'AdminApiController::JobPositionGet');
+                $routes->post('List', 'AdminApiController::JobPositionList', ['as' => 'job_position_list_api']);
+                $routes->post('Create', 'AdminApiController::JobPositionCreate', ['as' => 'job_position_create_api']);
+                $routes->post('Update', 'AdminApiController::JobPositionUpdate', ['as' => 'job_position_update_api']);
+                $routes->post('Delete', 'AdminApiController::JobPositionDelete', ['as' => 'job_position_delete_api']);
+            });
+            // JobPositionGet Routes
+            $routes->group('JobPosition', function ($routes) {
+                $routes->post('Get', 'AdminApiController::JobPositionGet');
+                $routes->post('List', 'AdminApiController::JobPositionList', ['as' => 'job_position_list_api']);
+                $routes->post('Create', 'AdminApiController::JobPositionCreate', ['as' => 'job_position_create_api']);
+                $routes->post('Update', 'AdminApiController::JobPositionUpdate', ['as' => 'job_position_update_api']);
+                $routes->post('Delete', 'AdminApiController::JobPositionDelete', ['as' => 'job_position_delete_api']);
+            });
+            // JobPostGet Routes
+            $routes->group('JobPost', function ($routes) {
+                $routes->post('Get', 'AdminApiController::JobPostGet');
+                $routes->post('List', 'AdminApiController::JobPostList', ['as' => 'job_post_list_api']);
+                $routes->post('Create', 'AdminApiController::JobPostCreate', ['as' => 'job_post_create_api']);
+                $routes->post('Update', 'AdminApiController::JobPostUpdate', ['as' => 'job_post_update_api']);
+                $routes->post('Delete', 'AdminApiController::JobPostDelete', ['as' => 'job_post_delete_api']);
+            });
+            // JobTypeGet Routes
+            $routes->group('JobType', function ($routes) {
+                $routes->post('Get', 'AdminApiController::JobTypeGet');
+                $routes->post('List', 'AdminApiController::JobTypeList', ['as' => 'job_type_list_api']);
+                $routes->post('Create', 'AdminApiController::JobTypeCreate', ['as' => 'job_type_create_api']);
+                $routes->post('Update', 'AdminApiController::JobTypeUpdate', ['as' => 'job_type_update_api']);
+                $routes->post('Delete', 'AdminApiController::JobTypeDelete', ['as' => 'job_type_delete_api']);
+            });
+            // SkillsGet Routes
+            $routes->group('Skills', function ($routes) {
+                $routes->post('Get', 'AdminApiController::SkillsGet');
+                $routes->post('List', 'AdminApiController::SkillsList', ['as' => 'skills_list_api']);
+                $routes->post('Create', 'AdminApiController::SkillsCreate', ['as' => 'skills_create_api']);
+                $routes->post('Update', 'AdminApiController::SkillsUpdate', ['as' => 'skills_update_api']);
+                $routes->post('Delete', 'AdminApiController::SkillsDelete', ['as' => 'skills_delete_api']);
             });
             $routes->group('FileUpload', function ($routes) {
                 $routes->post('ImageUpload', 'AdminApiController::ImageUpload', ['as' => 'file_upload_image_api']);
             });
-            $routes->group('Brand', function ($routes) {
-                $routes->post('Get', 'AdminApiController::BrandGet', ['as' => 'brand_get_api']);
-                $routes->post('List', 'AdminApiController::BrandList', ['as' => 'brand_list_api']);
-                $routes->post('Create', 'AdminApiController::BrandCreate', ['as' => 'brand_create_api']);
-                $routes->post('Update', 'AdminApiController::BrandUpdate', ['as' => 'brand_update_api']);
-                $routes->post('Delete', 'AdminApiController::BrandDelete', ['as' => 'brand_delete_api']);
-            });
-            $routes->group('CategoryType', function ($routes) {
-                $routes->post('Get', 'AdminApiController::CategoryTypeGet', ['as' => 'categoryType_get_api']);
-                $routes->post('List', 'AdminApiController::CategoryTypeList', ['as' => 'categoryType_list_api']);
-                $routes->post('Create', 'AdminApiController::CategoryTypeCreate', ['as' => 'categoryType_create_api']);
-                $routes->post('Update', 'AdminApiController::CategoryTypeUpdate', ['as' => 'categoryType_update_api']);
-                $routes->post('Delete', 'AdminApiController::CategoryTypeDelete', ['as' => 'categoryType_delete_api']);
-            });
-
-            $routes->group('Category', function ($routes) {
-                $routes->post('Get', 'AdminApiController::CategoryGet', ['as' => 'category_get_api']);
-                $routes->post('List', 'AdminApiController::CategoryList', ['as' => 'category_list_api']);
-                $routes->post('Create', 'AdminApiController::CategoryCreate', ['as' => 'category_create_api']);
-                $routes->post('Update', 'AdminApiController::CategoryUpdate', ['as' => 'category_update_api']);
-                $routes->post('Delete', 'AdminApiController::CategoryDelete', ['as' => 'category_delete_api']);
-            });
-
-            $routes->group('fabric', function ($routes) {
-                $routes->post('Get', 'AdminApiController::fabricGet', ['as' => 'fabric_get_api']);
-                $routes->post('List', 'AdminApiController::fabricList', ['as' => 'fabric_list_api']);
-                $routes->post('Create', 'AdminApiController::fabricCreate', ['as' => 'fabric_create_api']);
-                $routes->post('Update', 'AdminApiController::fabricUpdate', ['as' => 'fabric_update_api']);
-                $routes->post('Delete', 'AdminApiController::fabricDelete', ['as' => 'fabric_delete_api']);
-            });
-
-            $routes->group('pattern', function ($routes) {
-                $routes->post('Get', 'AdminApiController::AddPatternGet', ['as' => 'pattern_get_api']);
-                $routes->post('List', 'AdminApiController::AddPatternList', ['as' => 'pattern_list_api']);
-                $routes->post('Create', 'AdminApiController::AddPatternCreate', ['as' => 'pattern_create_api']);
-                $routes->post('Update', 'AdminApiController::AddPatternUpdate', ['as' => 'pattern_update_api']);
-                $routes->post('Delete', 'AdminApiController::AddPatternDelete', ['as' => 'pattern_delete_api']);
-            });
-
-            $routes->group('Product', function ($routes) {
-                $routes->post('Get', 'AdminApiController::productGet', ['as' => 'product_get_api']);
-                $routes->post('List', 'AdminApiController::productList', ['as' => 'product_list_api']);
-                $routes->post('Create', 'AdminApiController::productCreate', ['as' => 'product_create_api']);
-                $routes->post('Update', 'AdminApiController::productUpdate', ['as' => 'product_update_api']);
-                $routes->post('Delete', 'AdminApiController::productDelete', ['as' => 'product_delete_api']);
-            });
-            $routes->group('ProductVariant', function ($routes) {
-                $routes->post('Get', 'AdminApiController::variantGet', ['as' => 'variant_get_api']);
-                $routes->post('List', 'AdminApiController::variantList', ['as' => 'variant_list_api']);
-                $routes->post('Create', 'AdminApiController::variantCreate', ['as' => 'variant_create_api']);
-                $routes->post('Update', 'AdminApiController::variantUpdate', ['as' => 'variant_update_api']);
-                $routes->post('Delete', 'AdminApiController::variantDelete', ['as' => 'variant_delete_api']);
-                $routes->post('calculate_variant', 'AdminApiController::calculate_variant', ['as' => 'calculate_variant']);
-            });
-
-            $routes->group('Size', function ($routes) {
-                $routes->post('Get', 'AdminApiController::sizeGet', ['as' => 'size_get_api']);
-                $routes->post('List', 'AdminApiController::sizeList', ['as' => 'size_list_api']);
-                $routes->post('Create', 'AdminApiController::sizeCreate', ['as' => 'size_create_api']);
-                $routes->post('Update', 'AdminApiController::sizeUpdate', ['as' => 'size_update_api']);
-                $routes->post('Delete', 'AdminApiController::sizeDelete', ['as' => 'size_delete_api']);
-            });
-
-            $routes->group('Unit', function ($routes) {
-                $routes->post('Get', 'AdminApiController::unitGet', ['as' => 'unit_get_api']);
-                $routes->post('List', 'AdminApiController::unitList', ['as' => 'unit_list_api']);
-                $routes->post('Create', 'AdminApiController::unitCreate', ['as' => 'unit_create_api']);
-                $routes->post('Update', 'AdminApiController::unitUpdate', ['as' => 'unit_update_api']);
-                $routes->post('Delete', 'AdminApiController::unitDelete', ['as' => 'unit_delete_api']);
-            });
-            $routes->post('FirebaseMessagingIntegrationCreateUpdate', 'AdminApiController::FirebaseMessagingIntegrationCreateUpdate', ['as' => 'FirebaseMessagingIntegrationCreateUpdate']);
-            $routes->post('SendNotification', 'AdminApiController::SendNotification', ['as' => 'SendNotification']);
         });
     });
     // Ecommerce Api Start -------------------------------------------------------------------------------------------

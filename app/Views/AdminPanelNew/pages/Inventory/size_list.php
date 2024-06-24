@@ -3,7 +3,7 @@
         <h4>
             Size
         </h4>
-        <button class="btn btn-primary" onclick="editSize()" type="button" data-bs-toggle="offcanvas" data-bs-target="#AddRole" aria-controls="AddRole">
+        <button class="btn btn-primary" onclick="editSize()" type="button" data-bs-toggle="offcanvas" data-bs-target="#RightSlideBox" aria-controls="RightSlideBox">
             <i class="bx bxs-user-plus"></i> Add Size
         </button>
 
@@ -15,7 +15,7 @@
             </div>
         </div>
     </div>
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="AddRole" aria-labelledby="AddRoleLabel">
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="RightSlideBox" aria-labelledby="RightSlideBox">
 
     </div>
 
@@ -52,8 +52,8 @@
                 type: "get",
                 url: "<?= base_url(route_to("sizeCreateUpdate")) ?>" + (size_id ? "/" + size_id : ""),
                 success: function(response) {
-                    $("#AddRole").html("");
-                    $("#AddRole").html(response);
+                    $("#RightSlideBox").html("");
+                    $("#RightSlideBox").html(response);
 
                 }
             });
@@ -74,7 +74,7 @@
                     "data": null,
                     "render": function(data, type, row) {
                         return `
-                            <button class="btn btn-sm btn-info" onclick="editSize(${row.size_id  })" data-bs-toggle="offcanvas" data-bs-target="#AddRole" aria-controls="AddRole">
+                            <button class="btn btn-sm btn-info" onclick="editSize(${row.size_id  })" data-bs-toggle="offcanvas" data-bs-target="#RightSlideBox" aria-controls="RightSlideBox">
                                 <i class="bx bx-edit-alt"></i>
                             </button>
                             <button class="btn btn-sm btn-danger" onclick="deleteSize(${row.size_id  })">

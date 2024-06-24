@@ -1,5 +1,5 @@
 <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="AddRoleLabel">
+    <h5 class="offcanvas-title" id="RightSlideBox">
         <?= (isset($category_type_id) && !empty($category_type_id)) ? "Update" : "Add" ?> Category Type</h5>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 </div>

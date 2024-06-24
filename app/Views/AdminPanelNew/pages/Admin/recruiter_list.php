@@ -1,11 +1,11 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h4>
-            Role Users
+            Recruiter
         </h4>
 
-        <button class="btn btn-primary" onclick="editUser()" type="button" data-bs-toggle="offcanvas" data-bs-target="#AddRole" aria-controls="AddRole">
-            <i class="bx bxs-user-plus"></i> Add Role
+        <button class="btn btn-primary" onclick="editUser()" type="button" data-bs-toggle="offcanvas" data-bs-target="#RightSlideBox" aria-controls="RightSlideBox">
+            <i class="bx bxs-user-plus"></i> Add Recruiter
         </button>
     </div>
     <div class="card-body">
@@ -17,8 +17,8 @@
     </div>
 </div>
 
-<!-- Add Role user form offcanvas -->
-<div class="offcanvas offcanvas-end" tabindex="-1" id="AddRole" aria-labelledby="AddRoleLabel">
+<!-- Add User form offcanvas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="RightSlideBox" aria-labelledby="RightSlideBox">
 
 </div>
 <script>
@@ -27,7 +27,9 @@
     function successCallback(response) {
         if (response.status == 200 || response.status == 201) {
             $(".offcanvas button[data-bs-dismiss='offcanvas']").click();
-            fetchTableData();
+            fetchTableData({
+                user_type: 'recruiter'
+            });
         }
     }
 
@@ -39,7 +41,9 @@
         deleteRow({
                 "user_id": user_id
             }).then((response) => {
-                fetchTableData();
+                fetchTableData({
+                    user_type: 'recruiter'
+                });
             })
             .catch((error) => {
                 console.error("Deletion failed or cancelled:", error);
@@ -48,23 +52,42 @@
 
     function editUser(user_id = null) {
         $.ajax({
-            type: "get",
-            url: "<?= base_url(route_to("UserRoleCreateUpdateComponent")) ?>" + (user_id ? "/" + user_id : ""),
+            type: "post",
+            url: "<?= base_url(route_to("UserCreateUpdateComponent")) ?>",
+            data: {
+                user_type: 'recruiter',
+                user_id: user_id
+            },
             success: function(response) {
-                $("#AddRole").html("");
-                $("#AddRole").html(response);
-                $("#user_type").selectize({});
+                $("#RightSlideBox").html("");
+                $("#RightSlideBox").html(response);
+
+            }
+        });
+    }
+
+    function editProfile(recruiter_profile_id = null) {
+        $.ajax({
+            type: "post",
+            url: "<?= base_url(route_to("RecuriterProfileCreateUpdateComponent")) ?>",
+            data: {
+                recruiter_profile_id: recruiter_profile_id,
+            },
+            success: function(response) {
+                $("#RightSlideBox").html("");
+                $("#RightSlideBox").html(response);
+
             }
         });
     }
 
     function successDataTableCallbackFunction(response) {
         var columns = [{
-                title: "User ID",
+                title: "Recruiter ID",
                 data: "user_id"
             },
             {
-                title: "User Name",
+                title: "Recruiter Name",
                 data: "fullname"
             },
             {
@@ -76,19 +99,26 @@
                 data: "mobile"
             },
             {
-                title: "Role",
-                data: "user_type"
+                title: "Company",
+                data: "company_name"
             },
             {
-                title: "Active",
-                data: "is_active"
+                title: "State",
+                data: "state_name"
+            },
+            {
+                title: "City",
+                data: "city_name"
             },
             {
                 "title": "Actions",
                 "data": null,
                 "render": function(data, type, row) {
                     return `
-                            <button class="btn btn-sm btn-info" onclick="editUser(${row.user_id})" data-bs-toggle="offcanvas" data-bs-target="#AddRole" aria-controls="AddRole">
+                            <button class="btn btn-sm btn-danger" onclick="deleteUser(${row.user_id})">
+                                <i class="bx bx-profile-alt"></i>
+                            </button>
+                            <button class="btn btn-sm btn-info" onclick="editUser(${row.user_id})" data-bs-toggle="offcanvas" data-bs-target="#RightSlideBox" aria-controls="RightSlideBox">
                                 <i class="bx bx-edit-alt"></i>
                             </button>
                             <button class="btn btn-sm btn-danger" onclick="deleteUser(${row.user_id})">
@@ -117,13 +147,15 @@
     function fetchTableData(parameter = {}) {
         DataTableInitialized(
             'usersTable', // table_id
-            "<?= base_url(route_to('user_list_api')) ?>", // url
+            "<?= base_url(route_to('RecruiterListWithProfileDetails')) ?>", // url
             'POST', // method
             parameter, // parameter
             successDataTableCallbackFunction // dataTableSuccessCallBack
         );
     }
     $(document).ready(function() {
-        fetchTableData();
+        fetchTableData({
+            user_type: 'recruiter'
+        });
     });
 </script>
