@@ -1,6 +1,6 @@
 <div class="offcanvas-header">
     <h5 class="offcanvas-title" id="RightSlideBox"><?= (isset($user_id) && !empty($user_id)) ? "Update" : "Add" ?> <?=@$user_type_name?></h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" onclick='$("#RightSlideBox").html("");'></button>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" ></button>
 </div>
 <div class="offcanvas-body">
     <div class="error-message-box d-none">

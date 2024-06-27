@@ -88,10 +88,11 @@ class UserModel extends FunctionModel
     {
         try {
             $this->setTableAlias('r');
-            $this->select('r.*');
-            $this->where('r.user_type', 'recruiter');
-            $this->join('recruiter_profile as rp', 'rp.recruiter_profile_id = r.user_id', 'left');
+            $this->select('r.*, COALESCE(job_post_count.job_post_count, 0) as job_post_count');
+            $this->join('recruiter_profile as rp', 'rp.user_id = r.user_id', 'left');
+            $this->join('(SELECT recruiter_profile_id, COUNT(job_post_id) AS job_post_count FROM job_post GROUP BY recruiter_profile_id) AS job_post_count', 'job_post_count.recruiter_profile_id = rp.recruiter_profile_id', 'left');
             $this->recruiterProfileQuery('rp', $filter);
+            $this->where('r.user_type', 'recruiter');
             (isset($filter['user_id']) && !empty($filter['user_id'])) ? $this->where('r.user_id', $filter['user_id']) : "";
             (isset($filter['email']) && !empty($filter['email'])) ? $this->where('r.email', $filter['email']) : "";
             (isset($filter['mobile']) && !empty($filter['mobile'])) ? $this->where('r.mobile', $filter['mobile']) : "";

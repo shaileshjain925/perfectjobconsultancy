@@ -18,7 +18,7 @@
 </div>
 
 <!-- Add User form offcanvas -->
-<div class="offcanvas offcanvas-end" tabindex="-1" id="RightSlideBox" aria-labelledby="RightSlideBox">
+<div class="offcanvas offcanvas-end" tabindex="-1" id="RightSlideBox" aria-labelledby="RightSlideBox" style="width: 700px!important; overflow-x:auto">
 
 </div>
 <script>
@@ -66,12 +66,12 @@
         });
     }
 
-    function editProfile(recruiter_profile_id = null) {
+    function viewProfile(user_id = null) {
         $.ajax({
             type: "post",
-            url: "<?= base_url(route_to("RecuriterProfileCreateUpdateComponent")) ?>",
+            url: "<?= base_url(route_to("RecuriterProfileView")) ?>",
             data: {
-                recruiter_profile_id: recruiter_profile_id,
+                user_id: user_id,
             },
             success: function(response) {
                 $("#RightSlideBox").html("");
@@ -90,14 +90,14 @@
                 title: "Recruiter Name",
                 data: "fullname"
             },
-            {
-                title: "Email",
-                data: "email"
-            },
-            {
-                title: "Mobile",
-                data: "mobile"
-            },
+            // {
+            //     title: "Email",
+            //     data: "email"
+            // },
+            // {
+            //     title: "Mobile",
+            //     data: "mobile"
+            // },
             {
                 title: "Company",
                 data: "company_name"
@@ -111,14 +111,37 @@
                 data: "city_name"
             },
             {
+                "title": "JobPost",
+                "data": null,
+                "render": function(data, type, row) {
+                    var job_post_list_page_url = `<?= base_url(route_to('recruiter_job_post_list', '')) ?>/${row.recruiter_profile_id}`;
+                    var profile_create_update_url = `<?= base_url(route_to('recuriter_profile_create_update', '')) ?>/${row.user_id}`;
+                    var url = '';
+                    debugger;
+                    if (row.recruiter_profile_id == null || row.recruiter_profile_id == '') {
+                        url = profile_create_update_url
+                    } else {
+                        url = job_post_list_page_url
+                    }
+                    return `
+                            <a class="btn btn-sm btn-primary" href="${url}">
+                                JobPost (${row.job_post_count})
+                            </a>
+                        `;
+                }
+            },
+            {
                 "title": "Actions",
                 "data": null,
                 "render": function(data, type, row) {
                     return `
-                            <button class="btn btn-sm btn-danger" onclick="deleteUser(${row.user_id})">
-                                <i class="bx bx-profile-alt"></i>
+                            <a class="btn btn-sm btn-primary" href="<?= base_url(route_to('recuriter_profile_create_update', '')) ?>/${row.user_id}">
+                                <i class='bx bx-user'></i>
+                            </a>
+                            <button class="btn btn-sm btn-info" onclick="viewProfile(${row.user_id})" data-bs-toggle="offcanvas" data-bs-target="#RightSlideBox" aria-controls="RightSlideBox">
+                                <i class='bx bx-info-circle'></i>
                             </button>
-                            <button class="btn btn-sm btn-info" onclick="editUser(${row.user_id})" data-bs-toggle="offcanvas" data-bs-target="#RightSlideBox" aria-controls="RightSlideBox">
+                            <button class="btn btn-sm btn-success" onclick="editUser(${row.user_id})" data-bs-toggle="offcanvas" data-bs-target="#RightSlideBox" aria-controls="RightSlideBox">
                                 <i class="bx bx-edit-alt"></i>
                             </button>
                             <button class="btn btn-sm btn-danger" onclick="deleteUser(${row.user_id})">

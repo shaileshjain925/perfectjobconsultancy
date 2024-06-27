@@ -71,10 +71,30 @@ if (!in_array($file_extension, $extensions)) {
         });
         $routes->group('Admin', function ($routes) {
             $routes->get('UserList', 'AdminPageController::user_list', ['as' => 'user_list']);
+            $routes->get('JobTypeList', 'AdminPageController::job_type_list', ['as' => 'job_type_list']);
+            $routes->get('JobPositionList', 'AdminPageController::job_position_list', ['as' => 'job_position_list']);
+            $routes->post('JobTypeCreateUpdateComponent', 'AdminPageController::JobTypeCreateUpdateComponent', ['as' => 'JobTypeCreateUpdateComponent']);
+            $routes->post('JobPositionCreateUpdateComponent', 'AdminPageController::JobPositionCreateUpdateComponent', ['as' => 'JobPositionCreateUpdateComponent']);
+
+            // Recuriter Routes
             $routes->get('RecruiterList', 'AdminPageController::recruiter_list', ['as' => 'recruiter_list']);
+            $routes->get('RecruiterProfile/(:any)', 'AdminPageController::recuriter_profile_create_update/$1', ['as' => 'recuriter_profile_create_update']);
+            $routes->post('RecuriterProfileView', 'AdminPageController::RecuriterProfileView', ['as' => 'RecuriterProfileView']);
+            // Job Post List
+            $routes->get('AllJobPost', 'AdminPageController::recruiter_job_post_list', ['as' => 'all_job_post']);
+            $routes->get('RecruiterJobPostList/(:any)', 'AdminPageController::recruiter_job_post_list/$1', ['as' => 'recruiter_job_post_list']);
+            // Job Post Create Update
+            $routes->get('JobPostCreateUpdate', 'AdminPageController::job_post_create_update', ['as' => 'job_post_create']);
+            $routes->get('JobPostCreateUpdate/(:any)', 'AdminPageController::job_post_create_update/$1', ['as' => 'job_post_update']);
+
+            $routes->get('RecruiterJobPostCreateUpdate/(:any)', 'AdminPageController::recuriter_job_post_create_update/$1', ['as' => 'recuriter_job_post_create']);
+            $routes->get('RecruiterJobPostCreateUpdate/(:any)/(:any)', 'AdminPageController::recuriter_job_post_create_update/$1/$2', ['as' => 'recuriter_job_post_update']);
+
+            $routes->post('JobPostView', 'AdminPageController::JobPostView', ['as' => 'JobPostView']);
+
+
             $routes->get('CandidateList', 'AdminPageController::candidate_list', ['as' => 'candidate_list']);
             $routes->post('UserCreateUpdateComponent', 'AdminPageController::UserCreateUpdateComponent', ['as' => 'UserCreateUpdateComponent']);
-            $routes->post('RecuriterProfileCreateUpdateComponent', 'AdminPageController::RecuriterProfileCreateUpdateComponent', ['as' => 'RecuriterProfileCreateUpdateComponent']);
         });
     });
     // Admin Panel Api Start -----------------------------------------------------------------------------------------------------------
@@ -89,21 +109,21 @@ if (!in_array($file_extension, $extensions)) {
         // Admin Panel Api Without Midware Start
         $routes->group('Country', function ($routes) {
             $routes->post('Get', 'AdminApiController::CountryGet');
-            $routes->post('List', 'AdminApiController::CountryList');
+            $routes->post('List', 'AdminApiController::CountryList', ['as' => 'country_list_api']);
             $routes->post('Create', 'AdminApiController::CountryCreate');
             $routes->post('Update', 'AdminApiController::CountryUpdate');
             $routes->post('Delete', 'AdminApiController::CountryDelete');
         });
         $routes->group('State', function ($routes) {
             $routes->post('Get', 'AdminApiController::StateGet');
-            $routes->post('List', 'AdminApiController::StateList');
+            $routes->post('List', 'AdminApiController::StateList', ['as' => 'state_list_api']);
             $routes->post('Create', 'AdminApiController::StateCreate');
             $routes->post('Update', 'AdminApiController::StateUpdate');
             $routes->post('Delete', 'AdminApiController::StateDelete');
         });
         $routes->group('City', function ($routes) {
             $routes->post('Get', 'AdminApiController::CityGet');
-            $routes->post('List', 'AdminApiController::CityList');
+            $routes->post('List', 'AdminApiController::CityList', ['as' => 'city_list_api']);
             $routes->post('Create', 'AdminApiController::CityCreate');
             $routes->post('Update', 'AdminApiController::CityUpdate');
             $routes->post('Delete', 'AdminApiController::CityDelete');

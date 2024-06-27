@@ -77,6 +77,106 @@ class AdminPageController extends BaseController
         $theme_data['_view_files'][] = 'AdminPanelNew/pages/Admin/recruiter_list';
         return view('AdminPanelNew/partials/main', $theme_data);
     }
+    public function recuriter_profile_create_update($user_id)
+    {
+        $theme_data = $this->admin_panel_common_data();
+        $profile_data = $this->getRecruiterProfileModel()->where('user_id', $user_id)->first() ?? [];
+        $theme_data['user_id'] = $user_id;
+        $theme_data = array_merge($theme_data, $profile_data);
+        $theme_data['_meta_title'] = 'Recuriter Profile ' . (empty($profile_data)) ? "Create" : "Update";
+        $theme_data['_page_title'] = 'Recuriter Profile ' . (empty($profile_data)) ? "Create" : "Update";
+        $theme_data['_breadcrumb1'] = 'Admin';
+        $theme_data['_breadcrumb2'] = 'Recuriter Profile ' . (empty($profile_data)) ? "Create" : "Update";
+        $theme_data['ApiUrl'] = (empty($profile_data)) ? base_url(route_to('recruiter_profile_create_api')) : base_url(route_to('recruiter_profile_update_api'));
+        $theme_data['_view_files'][] = 'AdminPanelNew/pages/Admin/recuriter_profile';
+        $theme_data['_script_files'][] = $theme_data['_assets_path'] . 'assets/js/countrystatecity.js';
+        return view('AdminPanelNew/partials/main', $theme_data);
+    }
+    public function RecuriterProfileView()
+    {
+        $data = getRequestData($this->request, 'ARRAY');
+        if (!empty($data['user_id'])) {
+            $user_data = $this->getUserModel()->RecruiterListWithProfileDetails(['user_id' => $data['user_id']]);
+            return view("AdminPanelNew/components/RecuriterProfileView", $user_data['data'][0]);
+        } else {
+            return '';
+        }
+    }
+    public function job_type_list()
+    {
+        $theme_data = $this->admin_panel_common_data();
+        $theme_data['_meta_title'] = 'Job Type';
+        $theme_data['_page_title'] = 'Job Type';
+        $theme_data['_breadcrumb1'] = 'Admin';
+        $theme_data['_breadcrumb2'] = 'Job Type';
+        $theme_data['_view_files'][] = 'AdminPanelNew/pages/Admin/job_type_list';
+        return view('AdminPanelNew/partials/main', $theme_data);
+    }
+    public function JobTypeCreateUpdateComponent()
+    {
+        $data = getRequestData($this->request, 'ARRAY');
+        if (!empty($data['job_type_id'])) {
+            $user_data = $this->getJobTypeModel()->RecordGet($data['job_type_id']);
+            $data = array_merge($data, $user_data['data'], ['ApiUrl' => base_url(route_to('job_type_update_api'))]);
+        } else {
+            $data = array_merge($data, ['ApiUrl' => base_url(route_to('job_type_create_api'))]);
+        }
+        return view("AdminPanelNew/components/JobTypeCreateUpdate", $data);
+    }
+    public function job_position_list()
+    {
+        $theme_data = $this->admin_panel_common_data();
+        $theme_data['_meta_title'] = 'Job Position';
+        $theme_data['_page_title'] = 'Job Position';
+        $theme_data['_breadcrumb1'] = 'Admin';
+        $theme_data['_breadcrumb2'] = 'Job Position';
+        $theme_data['_view_files'][] = 'AdminPanelNew/pages/Admin/job_position_list';
+        return view('AdminPanelNew/partials/main', $theme_data);
+    }
+    public function JobPositionCreateUpdateComponent()
+    {
+        $data = getRequestData($this->request, 'ARRAY');
+        if (!empty($data['job_position_id'])) {
+            $user_data = $this->getJobPositionModel()->RecordGet($data['job_position_id']);
+            $data = array_merge($data, $user_data['data'], ['ApiUrl' => base_url(route_to('job_position_update_api'))]);
+        } else {
+            $data = array_merge($data, ['ApiUrl' => base_url(route_to('job_position_create_api'))]);
+        }
+        return view("AdminPanelNew/components/JobPositionCreateUpdate", $data);
+    }
+    public function recruiter_job_post_list($recruiter_profile_id = null)
+    {
+        $theme_data = $this->admin_panel_common_data();
+        $theme_data['recruiter_profile_id'] = $recruiter_profile_id;
+        if (!empty($recruiter_profile_id)) {
+            $theme_data = array_merge($theme_data, $this->getRecruiterProfileModel()->find($recruiter_profile_id));
+        }
+        $theme_data['_meta_title'] = 'Job Post';
+        $theme_data['_page_title'] = 'Job Post';
+        $theme_data['_breadcrumb1'] = 'Admin';
+        $theme_data['_breadcrumb2'] = 'Job Post';
+        $theme_data['_view_files'][] = 'AdminPanelNew/pages/Admin/recruiter_job_post_list';
+        return view('AdminPanelNew/partials/main', $theme_data);
+    }
+
+    public function recuriter_job_post_create_update($recruiter_profile_id, $job_post_id = null)
+    {
+        $theme_data = $this->admin_panel_common_data();
+        $job_post_data = $this->getJobPostModel()->where('job_post_id', $job_post_id)->first() ?? [];
+        $theme_data['recruiter_profile_id'] = $recruiter_profile_id;
+        $theme_data = array_merge($theme_data, $job_post_data);
+        $theme_data['_meta_title'] = 'Job Post ' . (empty($job_post_data)) ? "Create" : "Update";
+        $theme_data['_page_title'] = 'Job Post ' . (empty($job_post_data)) ? "Create" : "Update";
+        $theme_data['_breadcrumb1'] = 'Admin';
+        $theme_data['_breadcrumb2'] = 'Job Post ' . (empty($job_post_data)) ? "Create" : "Update";
+        $theme_data['ApiUrl'] = (empty($job_post_data)) ? base_url(route_to('job_post_create_api')) : base_url(route_to('job_post_update_api'));
+        $theme_data['_view_files'][] = 'AdminPanelNew/pages/Admin/job_post_create_update';
+        $theme_data['_script_files'][] = $theme_data['_assets_path'] . 'assets/js/countrystatecity.js';
+        return view('AdminPanelNew/partials/main', $theme_data);
+    }
+    public function job_post_create_update($job_post_id = null)
+    {
+    }
     public function candidate_list()
     {
         $theme_data = $this->admin_panel_common_data();
@@ -103,17 +203,6 @@ class AdminPageController extends BaseController
         }
         if (!empty($data['user_id'])) {
             $user_data = $this->getUserModel()->RecordGet($data['user_id']);
-            $data = array_merge($data, $user_data['data'], ['ApiUrl' => base_url(route_to('user_update_api'))]);
-        } else {
-            $data = array_merge($data, ['ApiUrl' => base_url(route_to('user_create_api'))]);
-        }
-        return view("AdminPanelNew/components/UserCreateUpdate", $data);
-    }
-    public function RecuriterProfileCreateUpdateComponent()
-    {
-        $data = getRequestData($this->request, 'ARRAY');
-        if (!empty($data['recruiter_profile_id'])) {
-            $user_data = $this->getRecruiterProfileModel()->RecordGet($data['recruiter_profile_id']);
             $data = array_merge($data, $user_data['data'], ['ApiUrl' => base_url(route_to('user_update_api'))]);
         } else {
             $data = array_merge($data, ['ApiUrl' => base_url(route_to('user_create_api'))]);
@@ -202,6 +291,32 @@ class AdminPageController extends BaseController
                     [
                         "title" => "Candidates",
                         "url" => base_url(route_to('candidate_list')),
+                        "badge_count" => 0,
+                        "visibility" => true,
+                    ],
+                    [
+                        "title" => "Job Type",
+                        "url" => base_url(route_to('job_type_list')),
+                        "badge_count" => 0,
+                        "visibility" => true,
+                    ],
+                    [
+                        "title" => "Job Position",
+                        "url" => base_url(route_to('job_position_list')),
+                        "badge_count" => 0,
+                        "visibility" => true,
+                    ],
+                ]
+            ],
+            [
+                "module_title" => "Jobs",
+                "module_name" => "Jobs",
+                "module_icon" => "mdi mdi-account-supervisor-outline",
+                "visibility" => ($_SESSION['user_type'] == 'admin') ? true : false,
+                "menus" => [
+                    [
+                        "title" => "All Jobs Posted",
+                        "url" => base_url(route_to('all_job_post')),
                         "badge_count" => 0,
                         "visibility" => true,
                     ],

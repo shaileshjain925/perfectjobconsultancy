@@ -1,7 +1,6 @@
 <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="RightSlideBox">
-        <?= (isset($size_id) && !empty($size_id)) ? "Update" : "Add" ?> Size</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    <h5 class="offcanvas-title" id="RightSlideBox"><?= (isset($job_type_id) && !empty($job_type_id)) ? "Update" : "Add" ?></h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" ></button>
 </div>
 <div class="offcanvas-body">
     <div class="error-message-box d-none">
@@ -11,12 +10,11 @@
         <p id="success-message"></p>
     </div>
     <form id="form" method="POST" enctype="multipart/form-data" action="<?= @$ApiUrl ?>">
-        <input type="hidden" name="size_id" id="size_id" value="<?= @$size_id  ?>">
-
+        <input type="hidden" name="job_type_id" id="job_type_id" value="<?= @$job_type_id ?>">
         <div class="mb-3">
-            <label class="form-label">Size Name<span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="size_name" name="size_name" placeholder="Size Name" value="<?= @$size_name ?>">
-            <span class="error-message" id="error-size_name"></span>
+            <label class="form-label">Name</label>
+            <input type="text" id="job_type_name" name="job_type_name" class="form-control" placeholder="Name" value="<?= @$job_type_name ?>">
+            <span class="error-message" id="error-job_type_name"></span>
         </div>
         <div>
             <div>
